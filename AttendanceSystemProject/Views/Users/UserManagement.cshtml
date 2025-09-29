@@ -178,36 +178,25 @@
                 });
             });
 
-      $('#detailsModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget); 
-                var userId = button.data('id');      
-                var modal = $(this);
-
-             
-                modal.find('#modal-content-details').hide();
-                modal.find('#modal-loader').show();
-
-            =
-                $.get('@Url.Action("GetUserDetailsJson", "Users")', { id: userId }, function (data) {
-                    modal.find('#modalUsername').text(data.Username);
-                    modal.find('#modalFullName').text(data.FullName);
-                    modal.find('#modalEmail').text(data.Email);
-                    modal.find('#modalPhoneNumber').text(data.PhoneNumber || 'N/A');
-                    modal.find('#modalStudentId').text(data.StudentId || 'N/A');
-                    modal.find('#modalRole').text(data.Role);
-                    modal.find('#modalStatus').html(data.IsActive ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-secondary">Locked</span>');
-                    modal.find('#modalEmailConfirmed').html(data.EmailConfirmed ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-warning">No</span>');
-                    modal.find('#modalCreatedDate').text(data.CreatedDate);
-                    modal.find('#modalLastLogin').text(data.LastLoginDate);
-
-                    // Ẩn loader và hiện nội dung mới
-                    modal.find('#modal-loader').hide();
-                    modal.find('#modal-content-details').show();
-                }).fail(function() {
-                    modal.find('#modal-loader').html('<p class="text-danger">Failed to load details.</p>');
-                });
+        userTableBody.on('click', '.js-view-details', function () {
+            var userId = $(this).data('id');
+            $('#modal-content-details').hide();
+            $('#modal-loader').show();
+            $.get('@Url.Action("GetUserDetailsJson", "Users")', { id: userId }, function (data) {
+                $('#modalUsername').text(data.Username);
+                $('#modalFullName').text(data.FullName);
+                $('#modalEmail').text(data.Email);
+                $('#modalPhoneNumber').text(data.PhoneNumber || 'N/A');
+                $('#modalStudentId').text(data.StudentId || 'N/A');
+                $('#modalRole').text(data.Role);
+                $('#modalStatus').html(data.IsActive ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-secondary">Locked</span>');
+                $('#modalEmailConfirmed').html(data.EmailConfirmed ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-warning">No</span>');
+                $('#modalCreatedDate').text(data.CreatedDate);
+                $('#modalLastLogin').text(data.LastLoginDate);
+                $('#modal-loader').hide();
+                $('#modal-content-details').show();
             });
-
+        });
 
 
             userTableBody.on('click', '.js-toggle-lock', function () {
