@@ -1,0 +1,32 @@
+﻿@model AttendanceSystemProject.ViewModels.LoginVm
+@{
+    ViewBag.Title = "Đăng nhập";
+}
+
+<h2>Đăng nhập</h2>
+
+@using (Html.BeginForm())
+{
+    
+    @Html.ValidationSummary(true)
+
+    @* Dùng input thường để tránh lỗi Expression<> *@
+    <div>
+        <label>Email:</label>
+        @Html.TextBox("UsernameOrEmail", Model?.UsernameOrEmail, new { @class = "form-control", type = "email" })
+    </div>
+    <div>
+        <label>Password:</label>
+        @Html.Password("Password", null, new { @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Đăng nhập</button>
+    <div class="text-center mt-3">
+        <p>Chưa có tài khoản? <a href="@Url.Action("Register", "Account")">Đăng ký ngay</a></p>
+    </div>
+    <p>
+        Chưa có tài khoản?
+        <a class="btn btn-link p-0" href="@Url.Action("Register", "Account")">Đăng ký ngay</a>
+    </p>
+
+}

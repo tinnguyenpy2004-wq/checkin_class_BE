@@ -1,0 +1,75 @@
+@model IEnumerable<AttendanceSystemProject.Models.Department>
+
+@{
+    ViewBag.Title = "Danh sách Khoa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2>Danh sách Khoa</h2>
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success">
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.Error
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    <p>
+        @Html.ActionLink("Thêm Khoa Mới", "Create", null, new { @class = "btn btn-primary" })
+    </p>
+
+    @if (Model != null && Model.Any())
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tên Khoa</th>
+                    <th>Mã Khoa</th>
+                    <th>Mô tả</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Code)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                        <td>@(item.IsActive ? "Hoạt động" : "Không hoạt động")</td>
+                        <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
+                        <td>
+                            @Html.ActionLink("Sửa", "Edit", new { id = item.DepartmentId }, new { @class = "btn btn-sm btn-warning" }) |
+                            @Html.ActionLink("Chi tiết", "Details", new { id = item.DepartmentId }, new { @class = "btn btn-sm btn-info" }) |
+                            @Html.ActionLink("Xóa", "Delete", new { id = item.DepartmentId }, new { @class = "btn btn-sm btn-danger" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <h4>Chưa có dữ liệu khoa nào!</h4>
+            <p>Hãy thêm khoa đầu tiên bằng cách click vào nút "Thêm Khoa Mới".</p>
+        </div>
+    }
+</div>

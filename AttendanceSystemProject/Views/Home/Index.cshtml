@@ -1,0 +1,68 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<main>
+    <section class="row" aria-labelledby="aspnetTitle">
+        <h1 id="title">Hệ Thống Điểm Danh</h1>
+        <p class="lead">Hệ thống quản lý điểm danh cho trường học và sự kiện.</p>
+        
+        @if (ViewBag.DatabaseConnection != null)
+        {
+            <div class="alert alert-@ViewBag.ConnectionStatus">
+                <strong>@ViewBag.DatabaseConnection</strong>
+                @if (ViewBag.DepartmentCount != null)
+                {
+                    <br />
+                    <text>Số khoa: @ViewBag.DepartmentCount | Số người dùng: @ViewBag.UserCount</text>
+                }
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">
+                <strong>Lỗi:</strong> @ViewBag.Error
+            </div>
+        }
+
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Message"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["Error"]
+            </div>
+        }
+
+        <p>
+            <a href="@Url.Action("Index", "Departments")" class="btn btn-primary btn-md">Quản lý Khoa &raquo;</a>
+            <a href="@Url.Action("SeedData", "Home")" class="btn btn-success btn-md">Tạo dữ liệu mẫu &raquo;</a>
+        </p>
+    </section>
+
+    <div class="row">
+        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
+            <h2 id="gettingStartedTitle">Quản lý Khoa</h2>
+            <p>
+                Quản lý thông tin các khoa trong trường học. Thêm, sửa, xóa và xem danh sách các khoa.
+            </p>
+            <p><a class="btn btn-outline-dark" href="@Url.Action("Index", "Departments")">Xem Danh sách Khoa &raquo;</a></p>
+        </section>
+        <section class="col-md-4" aria-labelledby="librariesTitle">
+            <h2 id="librariesTitle">Get more libraries</h2>
+            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
+            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+        </section>
+        <section class="col-md-4" aria-labelledby="hostingTitle">
+            <h2 id="hostingTitle">Web Hosting</h2>
+            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
+            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+        </section>
+    </div>
+</main>

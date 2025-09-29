@@ -1,0 +1,23 @@
+﻿@model AttendanceSystemProject.ViewModels.VerifyOtpVm
+@{
+    ViewBag.Title = "Xác thực OTP";
+}
+
+<h2>Xác thực OTP</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    @Html.Hidden("UserId", Model?.UserId)
+    @Html.Hidden("Purpose", Model?.Purpose)
+    @Html.Hidden("ReturnUrl", Model?.ReturnUrl)
+
+    <div>
+        <label>Nhập mã OTP:</label>
+        @Html.TextBox("Code", Model?.Code, new { @class = "form-control", maxlength = 6 })
+    </div>
+
+    <button type="submit" class="btn btn-success">Xác nhận</button>
+}
