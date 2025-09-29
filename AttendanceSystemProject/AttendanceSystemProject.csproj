@@ -259,6 +259,9 @@
     <Content Include="Views\Dashboard\AdminDashboard.cshtml" />
     <Content Include="Views\Dashboard\TeacherDashboard.cshtml" />
     <Content Include="Views\Dashboard\StudentDashboard.cshtml" />
+    <Content Include="Views\Users\UserManagement.cshtml" />
+    <Content Include="Views\Users\_UserForm.cshtml" />
+    <Content Include="Views\Users\_UserRow.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

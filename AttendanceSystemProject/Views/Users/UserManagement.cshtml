@@ -1,0 +1,237 @@
+﻿@model IEnumerable<AttendanceSystemProject.Models.User>
+
+@{
+    ViewBag.Title = "User Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>User Management</h2>
+    <button type="button" id="createUserBtn" class="btn btn-success">
+        <i class="glyphicon glyphicon-plus"></i> Create New User
+    </button>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th style="width: 320px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody id="user-table-body">
+        @foreach (var item in Model)
+        {
+            Html.RenderPartial("_UserRow", item);
+        }
+    </tbody>
+</table>
+
+<!-- Modal cho Create/Edit -->
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="userModalLabel"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="userModalBody">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal cho Details -->
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="detailsModalLabel">User Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-loader" class="text-center"><p>Loading...</p></div>
+                <div id="modal-content-details" style="display:none;">
+                    <p><strong>Username:</strong> <span id="modalUsername"></span></p>
+                    <p><strong>Full Name:</strong> <span id="modalFullName"></span></p>
+                    <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                    <p><strong>Phone Number:</strong> <span id="modalPhoneNumber"></span></p>
+                    <p><strong>Student ID:</strong> <span id="modalStudentId"></span></p>
+                    <p><strong>Role:</strong> <span id="modalRole"></span></p>
+                    <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                    <p><strong>Email Confirmed:</strong> <span id="modalEmailConfirmed"></span></p>
+                    <p><strong>Created Date:</strong> <span id="modalCreatedDate"></span></p>
+                    <p><strong>Last Login:</strong> <span id="modalLastLogin"></span></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal cho Delete Confirmation -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="deleteModalLabel">Confirm Delete</h4>
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete user <strong id="deleteUserName"></strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@section scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var token = $('#__AjaxAntiForgeryForm input[name="__RequestVerificationToken"]').val();
+            var userTableBody = $('#user-table-body');
+
+            $('#createUserBtn').on('click', function() {
+                $('#userModalLabel').text('Create New User');
+                $('#userModalBody').load('@Url.Action("_Create", "Users")', function() {
+                    $('#userModal').modal('show');
+                    $.validator.unobtrusive.parse('#userForm');
+                });
+            });
+
+            userTableBody.on('click', '.js-edit-user', function() {
+                var userId = $(this).data('id');
+                $('#userModalLabel').text('Edit User');
+                $('#userModalBody').load('@Url.Action("_Edit", "Users")/' + userId, function() {
+                    $('#userModal').modal('show');
+                    $.validator.unobtrusive.parse('#userForm');
+                });
+            });
+
+            $('body').on('submit', '#userForm', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                if (form.valid()) {
+                    $.ajax({
+                        url: form.attr('action'),
+                        type: 'POST',
+                        data: form.serialize(),
+                        success: function(response) {
+                            if (response.success) {
+                                $('#userModal').modal('hide');
+                                var userId = $(response.view).attr('id').replace('user-row-', '');
+                                var existingRow = $('#user-row-' + userId);
+                                if(existingRow.length > 0) {
+                                    existingRow.replaceWith(response.view);
+                                } else {
+                                    userTableBody.append(response.view);
+                                }
+                            } else {
+                                $('#userModalBody').html(response);
+                                $.validator.unobtrusive.parse('#userForm');
+                            }
+                        }
+                    });
+                }
+            });
+
+            var userIdToDelete;
+            userTableBody.on('click', '.js-delete-user', function() {
+                userIdToDelete = $(this).data('id');
+                var userName = $(this).data('name');
+                $('#deleteUserName').text(userName);
+                $('#deleteModal').modal('show');
+            });
+
+            $('#confirmDeleteBtn').on('click', function() {
+                $.ajax({
+                    url: '@Url.Action("Delete", "Users")/' + userIdToDelete,
+                    type: 'POST',
+                    data: { __RequestVerificationToken: token },
+                    success: function (response) {
+                        if(response.success) {
+                            $('#user-row-' + userIdToDelete).fadeOut(300, function() { $(this).remove(); });
+                            $('#deleteModal').modal('hide');
+                        }
+                    }
+                });
+            });
+
+      $('#detailsModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); 
+                var userId = button.data('id');      
+                var modal = $(this);
+
+             
+                modal.find('#modal-content-details').hide();
+                modal.find('#modal-loader').show();
+
+            =
+                $.get('@Url.Action("GetUserDetailsJson", "Users")', { id: userId }, function (data) {
+                    modal.find('#modalUsername').text(data.Username);
+                    modal.find('#modalFullName').text(data.FullName);
+                    modal.find('#modalEmail').text(data.Email);
+                    modal.find('#modalPhoneNumber').text(data.PhoneNumber || 'N/A');
+                    modal.find('#modalStudentId').text(data.StudentId || 'N/A');
+                    modal.find('#modalRole').text(data.Role);
+                    modal.find('#modalStatus').html(data.IsActive ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-secondary">Locked</span>');
+                    modal.find('#modalEmailConfirmed').html(data.EmailConfirmed ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-warning">No</span>');
+                    modal.find('#modalCreatedDate').text(data.CreatedDate);
+                    modal.find('#modalLastLogin').text(data.LastLoginDate);
+
+                    // Ẩn loader và hiện nội dung mới
+                    modal.find('#modal-loader').hide();
+                    modal.find('#modal-content-details').show();
+                }).fail(function() {
+                    modal.find('#modal-loader').html('<p class="text-danger">Failed to load details.</p>');
+                });
+            });
+
+
+
+            userTableBody.on('click', '.js-toggle-lock', function () {
+                var button = $(this);
+                var userId = button.data('id');
+                var currentStatus = button.data('status') === 'true';
+                var actionUrl = currentStatus ? '@Url.Action("Lock", "Users")' : '@Url.Action("Unlock", "Users")';
+
+                $.post(actionUrl, { id: userId, __RequestVerificationToken: token }, function (response) {
+                    if (response.success) {
+                        var statusText = $('#status-text-' + userId);
+                        var lockButtonText = $('#lock-text-' + userId);
+                        if (currentStatus) {
+                            statusText.text('Locked').removeClass('badge-success').addClass('badge-secondary');
+                            lockButtonText.text('Unlock');
+                            button.removeClass('btn-secondary').addClass('btn-primary').data('status', 'false');
+                        } else {
+                            statusText.text('Active').removeClass('badge-secondary').addClass('badge-success');
+                            lockButtonText.text('Lock');
+                            button.removeClass('btn-primary').addClass('btn-secondary').data('status', 'true');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}
