@@ -15,7 +15,7 @@ namespace AttendanceSystemProject.Controllers
     {
         private AttendanceSystemContext db = new AttendanceSystemContext();
 
-        [Authorize(Roles = "Admin,Teacher")]
+        [Authorize(Roles = "Admin,Organizer")]
         public ActionResult UserManagement(string q, int? departmentId = null, string sort = "created", string dir = "desc", int page = 1, int pageSize = 20)
         {
             if (page < 1) page = 1;
@@ -80,7 +80,7 @@ namespace AttendanceSystemProject.Controllers
             return View(users);
         }
 
-        [Authorize(Roles = "Admin,Teacher")]
+        [Authorize(Roles = "Admin,Organizer")]
         public ActionResult GetUserDetailsJson(int id)
         {
             var user = db.Users.Include("Department").FirstOrDefault(u => u.UserId == id);
@@ -287,7 +287,7 @@ namespace AttendanceSystemProject.Controllers
             return RedirectToAction("UserManagement");
         }
 
-        [Authorize(Roles = "Admin,Teacher")]
+        [Authorize(Roles = "Admin,Organizer")]
         [HttpGet]
         public ActionResult ExportCsv(string q, int? departmentId = null, string sort = "created", string dir = "desc")
         {

@@ -29,9 +29,12 @@
         </div>
     }
 
-    <p>
-        @Html.ActionLink("Thêm Khoa Mới", "Create", null, new { @class = "btn btn-primary" })
-    </p>
+    @if (User.IsInRole("Admin"))
+    {
+        <p>
+            @Html.ActionLink("Thêm Khoa Mới", "Create", null, new { @class = "btn btn-primary" })
+        </p>
+    }
 
     @if (Model != null && Model.Any())
     {
@@ -69,7 +72,17 @@
     {
         <div class="alert alert-info">
             <h4>Chưa có dữ liệu khoa nào!</h4>
-            <p>Hãy thêm khoa đầu tiên bằng cách click vào nút "Thêm Khoa Mới".</p>
+            @if (User.IsInRole("Admin"))
+            {
+                <p>Bấm nút bên dưới để thêm khoa đầu tiên.</p>
+                <p>
+                    @Html.ActionLink("Thêm Khoa Mới", "Create", null, new { @class = "btn btn-primary" })
+                </p>
+            }
+            else
+            {
+                <p>Liên hệ quản trị viên để thêm khoa đầu tiên.</p>
+            }
         </div>
     }
 </div>

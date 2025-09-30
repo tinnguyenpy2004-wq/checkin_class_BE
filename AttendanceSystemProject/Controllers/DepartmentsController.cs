@@ -13,6 +13,7 @@ namespace AttendanceSystemProject.Controllers
         private DatabaseService dbService = new DatabaseService();
 
         // GET: Departments
+        [AllowAnonymous]
         public ActionResult Index()
         {
             try
@@ -23,12 +24,13 @@ namespace AttendanceSystemProject.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.Error = "Lỗi kết nối database: " + ex.Message;
+                // Ẩn thông báo lỗi kết nối trên UI, chỉ trả về danh sách rỗng
                 return View(new List<Department>());
             }
         }
 
         // GET: Departments/Create
+        [Authorize(Roles = "Admin,Organizer")]
         public ActionResult Create()
         {
             return View();
@@ -37,6 +39,7 @@ namespace AttendanceSystemProject.Controllers
         // POST: Departments/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")] // chỉ Admin được thêm khoa
         public ActionResult Create(Department department)
         {
             if (ModelState.IsValid)

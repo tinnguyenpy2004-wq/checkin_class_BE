@@ -274,7 +274,7 @@
     <Content Include="Views\Account\ForgotPassword.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Dashboard\AdminDashboard.cshtml" />
-    <Content Include="Views\Dashboard\TeacherDashboard.cshtml" />
+    <Content Include="Views\Dashboard\OrganizerDashboard.cshtml" />
     <Content Include="Views\Dashboard\StudentDashboard.cshtml" />
     <Content Include="Views\Users\UserManagement.cshtml" />
     <Content Include="Views\Users\_UserForm.cshtml" />

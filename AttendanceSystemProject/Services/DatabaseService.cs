@@ -36,7 +36,7 @@ namespace AttendanceSystemProject.Services
                     return _cachedDepartments;
                 }
 
-                var data = _db.Departments.Where(d => d.IsActive).OrderBy(d => d.Name).ToList();
+                var data = _db.Departments.AsNoTracking().Where(d => d.IsActive).OrderBy(d => d.Name).ToList();
                 _cachedDepartments = data;
                 _departmentsCacheExpireAt = now.AddMinutes(5);
                 return data;

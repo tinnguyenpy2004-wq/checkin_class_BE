@@ -1,15 +1,17 @@
 ﻿@model IEnumerable<AttendanceSystemProject.Models.User>
 
 @{
-    ViewBag.Title = "User Management";
+    ViewBag.Title = "Quản lý tài khoản";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>User Management</h2>
-    <button type="button" id="createUserBtn" class="btn btn-success">
-        <i class="glyphicon glyphicon-plus"></i> Create New User
-    </button>
+    <h2>Quản lý tài khoản</h2>
+    @if (User.IsInRole("Admin")) {
+        <button type="button" id="createUserBtn" class="btn btn-success">
+            <i class="glyphicon glyphicon-plus"></i> Tạo tài khoản mới
+        </button>
+    }
 </div>
 
 <form method="get" class="form-inline mb-3">
@@ -20,8 +22,8 @@
         @Html.DropDownList("departmentId", (SelectList)ViewBag.Departments, "All departments", new { @class = "form-control" })
     </div>
     <div class="form-group mr-2">
+        @{ var selectedSize = (int)(ViewBag.PageSize ?? 20); }
         <select name="pageSize" class="form-control">
-            var selectedSize = (int)(ViewBag.PageSize ?? 20);
             <option value="10" @(selectedSize==10?"selected":"")>10</option>
             <option value="20" @(selectedSize==20?"selected":"")>20</option>
             <option value="50" @(selectedSize==50?"selected":"")>50</option>
@@ -83,7 +85,7 @@
             <li class="page-item @(page<=1?"disabled":"")">
                 <a class="page-link" href="@Url.Action("UserManagement", new { q = ViewBag.Query, departmentId = ViewBag.DepartmentId, sort = ViewBag.Sort, dir = ViewBag.Dir, page = Math.Max(1, page-1), pageSize = pageSize })">Prev</a>
             </li>
-            for (int i = Math.Max(1, page-2); i <= Math.Min(totalPages, page+2); i++)
+            @for (int i = Math.Max(1, page-2); i <= Math.Min(totalPages, page+2); i++)
             {
                 <li class="page-item @(i==page?"active":"")">
                     <a class="page-link" href="@Url.Action("UserManagement", new { q = ViewBag.Query, departmentId = ViewBag.DepartmentId, sort = ViewBag.Sort, dir = ViewBag.Dir, page = i, pageSize = pageSize })">@i</a>

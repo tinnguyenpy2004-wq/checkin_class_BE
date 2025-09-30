@@ -8,6 +8,10 @@ namespace AttendanceSystemProject.Models
     {
         public AttendanceSystemContext() : base(GetConnectionString())
         {
+            // Performance: disable proxies/lazy loading by default
+            this.Configuration.LazyLoadingEnabled = false;
+            this.Configuration.ProxyCreationEnabled = false;
+            this.Configuration.AutoDetectChangesEnabled = true; // keep true for safety; toggle off in bulk ops
         }
 
         private static string GetConnectionString()
@@ -45,6 +49,10 @@ namespace AttendanceSystemProject.Models
             // ⚙ Cấu hình bảng User
             modelBuilder.Entity<User>()
                 .ToTable("Users");
+
+            // ⚙ Cấu hình bảng Department (khớp với script DB dùng tên "Departments")
+            modelBuilder.Entity<Department>()
+                .ToTable("Departments");
 
             // Quan hệ User - Department (User thuộc 1 Department)
             modelBuilder.Entity<User>()

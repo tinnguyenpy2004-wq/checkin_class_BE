@@ -2,7 +2,7 @@
 
 @{
     var roleName = ((AttendanceSystemProject.Models.UserRole)Model.Role).ToString();
-    var roleBadge = roleName == "Admin" ? "badge-danger" : roleName == "Teacher" ? "badge-info" : "badge-secondary";
+    var roleBadge = roleName == "Admin" ? "badge-danger" : roleName == "Organizer" ? "badge-info" : "badge-secondary";
 }
 <tr id="user-row-@Model.UserId">
     <td>@Model.Username</td>
