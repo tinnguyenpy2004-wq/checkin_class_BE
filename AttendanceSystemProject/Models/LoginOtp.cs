@@ -16,8 +16,8 @@ namespace AttendanceSystemProject.Models
         [Required, StringLength(50)]
         public string Purpose { get; set; }   // "register_confirm" | "login"
 
-        [Required, StringLength(6)]
-        public string Code { get; set; }      // 6 digits
+        [Required, StringLength(128)]
+        public string Code { get; set; }      // store SHA-256 hex of OTP
 
         public DateTime ExpiresAt { get; set; }
         public DateTime? ConsumedAt { get; set; }

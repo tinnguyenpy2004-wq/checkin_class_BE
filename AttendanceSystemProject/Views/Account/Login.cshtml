@@ -7,7 +7,7 @@
 
 @using (Html.BeginForm())
 {
-    
+    @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
 
     @* Dùng input thường để tránh lỗi Expression<> *@
@@ -19,14 +19,19 @@
         <label>Password:</label>
         @Html.Password("Password", null, new { @class = "form-control" })
     </div>
+    <div class="form-check mt-2">
+        <label class="form-check-label">
+            @Html.CheckBox("RememberMe", Model?.RememberMe ?? false, new { @class = "form-check-input" }) Ghi nhớ đăng nhập
+        </label>
+    </div>
 
     <button type="submit" class="btn btn-primary">Đăng nhập</button>
     <div class="text-center mt-3">
         <p>Chưa có tài khoản? <a href="@Url.Action("Register", "Account")">Đăng ký ngay</a></p>
     </div>
     <p>
-        Chưa có tài khoản?
-        <a class="btn btn-link p-0" href="@Url.Action("Register", "Account")">Đăng ký ngay</a>
+        Quên mật khẩu?
+        <a class="btn btn-link p-0" href="@Url.Action("ForgotPassword", "Account")">Khôi phục mật khẩu</a>
     </p>
 
 }

@@ -1,0 +1,64 @@
+@model IEnumerable<AttendanceSystemProject.Models.AuditLog>
+
+@{
+    ViewBag.Title = "Audit Logs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Audit Logs</h2>
+
+<form method="get" class="form-inline mb-3">
+    <input type="date" name="from" value="@ViewBag.From" class="form-control mr-2" />
+    <input type="date" name="to" value="@ViewBag.To" class="form-control mr-2" />
+    <input type="number" name="actorId" value="@ViewBag.ActorId" class="form-control mr-2" placeholder="Actor UserId" />
+    <select name="action" class="form-control mr-2">
+        <option value="">All actions</option>
+        @foreach (var a in (string[])ViewBag.Actions){
+            <option value="@a" @(ViewBag.ActionName==a?"selected":"")>@a</option>
+        }
+    </select>
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary ml-2">Reset</a>
+    <a href="@Url.Action("UserManagement","Users")" class="btn btn-link ml-2">Back to Users</a>
+    <a href="@Url.Action("ExportCsv", new { from = ViewBag.From, to = ViewBag.To, actorId = ViewBag.ActorId, action = ViewBag.ActionName })" class="btn btn-success ml-2">Export CSV</a>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>Actor</th>
+            <th>Target</th>
+            <th>Action</th>
+            <th>IP</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ var map = (System.Collections.Generic.Dictionary<int, string>)ViewBag.UserMap ?? new System.Collections.Generic.Dictionary<int, string>(); }
+        @foreach (var log in Model){
+            <tr>
+                <td>@log.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@(log.ActorUserId.HasValue && map.ContainsKey(log.ActorUserId.Value) ? map[log.ActorUserId.Value] : log.ActorUserId.ToString())</td>
+                <td>@(log.TargetUserId.HasValue && map.ContainsKey(log.TargetUserId.Value) ? map[log.TargetUserId.Value] : log.TargetUserId.ToString())</td>
+                <td>@log.Action</td>
+                <td>@log.IpAddress</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{ var total = (int)ViewBag.TotalItems; var page = (int)ViewBag.Page; var pageSize = (int)ViewBag.PageSize; var totalPages = (int)Math.Ceiling((double)total / pageSize); }
+<nav aria-label="Pager">
+    <ul class="pagination">
+        <li class="page-item @(page<=1?"disabled":"")">
+            <a class="page-link" href="@Url.Action("Index", new { page = page - 1, pageSize = pageSize, from = ViewBag.From, to = ViewBag.To, actorId = ViewBag.ActorId, action = ViewBag.ActionName })">Prev</a>
+        </li>
+        <li class="page-item disabled"><span class="page-link">@page / @totalPages</span></li>
+        <li class="page-item @(page>=totalPages?"disabled":"")">
+            <a class="page-link" href="@Url.Action("Index", new { page = page + 1, pageSize = pageSize, from = ViewBag.From, to = ViewBag.To, actorId = ViewBag.ActorId, action = ViewBag.ActionName })">Next</a>
+        </li>
+    </ul>
+    <small>Total: @total</small>
+</nav>
+
+

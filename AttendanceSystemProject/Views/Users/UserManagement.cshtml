@@ -12,13 +12,48 @@
     </button>
 </div>
 
+<form method="get" class="form-inline mb-3">
+    <div class="form-group mr-2">
+        <input type="text" name="q" value="@ViewBag.Query" class="form-control" placeholder="Search name/email/username/studentId" />
+    </div>
+    <div class="form-group mr-2">
+        @Html.DropDownList("departmentId", (SelectList)ViewBag.Departments, "All departments", new { @class = "form-control" })
+    </div>
+    <div class="form-group mr-2">
+        <select name="pageSize" class="form-control">
+            var selectedSize = (int)(ViewBag.PageSize ?? 20);
+            <option value="10" @(selectedSize==10?"selected":"")>10</option>
+            <option value="20" @(selectedSize==20?"selected":"")>20</option>
+            <option value="50" @(selectedSize==50?"selected":"")>50</option>
+            <option value="100" @(selectedSize==100?"selected":"")>100</option>
+        </select>
+    </div>
+    <input type="hidden" name="sort" value="@ViewBag.Sort" />
+    <input type="hidden" name="dir" value="@ViewBag.Dir" />
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a class="btn btn-success ml-2" href="@Url.Action("ExportCsv", new { q = ViewBag.Query, departmentId = ViewBag.DepartmentId, sort = ViewBag.Sort, dir = ViewBag.Dir })">Export CSV</a>
+</form>
+
+@{
+    Func<string, string, IHtmlString> sortLink = (col, text) => {
+        var currentSort = (string)ViewBag.Sort ?? "created";
+        var currentDir = ((string)ViewBag.Dir ?? "desc").ToLower();
+        var nextDir = (currentSort == col && currentDir == "asc") ? "desc" : "asc";
+        var url = Url.Action("UserManagement", new { q = ViewBag.Query, departmentId = ViewBag.DepartmentId, sort = col, dir = nextDir, page = ViewBag.Page, pageSize = ViewBag.PageSize });
+        return new HtmlString($"<a href=\"{url}\">{text}</a>");
+    };
+}
+
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Username</th>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th>Status</th>
+            <th>@sortLink("username", "Username")</th>
+            <th>@sortLink("fullname", "Full Name")</th>
+            <th>@sortLink("email", "Email")</th>
+            <th>@sortLink("department", "Department")</th>
+            <th>Role</th>
+            <th>@sortLink("created", "Created")</th>
+            <th>@sortLink("lastlogin", "Last Login")</th>
             <th style="width: 320px;">Actions</th>
         </tr>
     </thead>
@@ -29,6 +64,37 @@
         }
     </tbody>
 </table>
+
+<div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 100px;">
+  <div id="toast-container" style="position: absolute; top: 0; right: 0;">
+  </div>
+</div>
+
+@{
+    var total = (int)(ViewBag.TotalItems ?? 0);
+    var page = (int)(ViewBag.Page ?? 1);
+    var pageSize = (int)(ViewBag.PageSize ?? 20);
+    var totalPages = (int)Math.Ceiling((double)total / Math.Max(1, pageSize));
+}
+@if (totalPages > 1)
+{
+    <nav aria-label="Users pagination">
+        <ul class="pagination">
+            <li class="page-item @(page<=1?"disabled":"")">
+                <a class="page-link" href="@Url.Action("UserManagement", new { q = ViewBag.Query, departmentId = ViewBag.DepartmentId, sort = ViewBag.Sort, dir = ViewBag.Dir, page = Math.Max(1, page-1), pageSize = pageSize })">Prev</a>
+            </li>
+            for (int i = Math.Max(1, page-2); i <= Math.Min(totalPages, page+2); i++)
+            {
+                <li class="page-item @(i==page?"active":"")">
+                    <a class="page-link" href="@Url.Action("UserManagement", new { q = ViewBag.Query, departmentId = ViewBag.DepartmentId, sort = ViewBag.Sort, dir = ViewBag.Dir, page = i, pageSize = pageSize })">@i</a>
+                </li>
+            }
+            <li class="page-item @(page>=totalPages?"disabled":"")">
+                <a class="page-link" href="@Url.Action("UserManagement", new { q = ViewBag.Query, departmentId = ViewBag.DepartmentId, sort = ViewBag.Sort, dir = ViewBag.Dir, page = Math.Min(totalPages, page+1), pageSize = pageSize })">Next</a>
+            </li>
+        </ul>
+    </nav>
+}
 
 <!-- Modal cho Create/Edit -->
 <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
@@ -64,6 +130,7 @@
                     <p><strong>Email:</strong> <span id="modalEmail"></span></p>
                     <p><strong>Phone Number:</strong> <span id="modalPhoneNumber"></span></p>
                     <p><strong>Student ID:</strong> <span id="modalStudentId"></span></p>
+                    <p><strong>Department:</strong> <span id="modalDepartment"></span></p>
                     <p><strong>Role:</strong> <span id="modalRole"></span></p>
                     <p><strong>Status:</strong> <span id="modalStatus"></span></p>
                     <p><strong>Email Confirmed:</strong> <span id="modalEmailConfirmed"></span></p>
@@ -105,55 +172,26 @@
 }
 
 @section scripts {
-    <script src="~/Scripts/jquery.validate.min.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
-    <script>
+    @{ var nonce = (string)System.Web.HttpContext.Current.Items["CspNonce"]; }
+    <script src="~/Scripts/jquery.validate.min.js" nonce="@nonce"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js" nonce="@nonce"></script>
+    <script nonce="@nonce">
+        function showToast(message, type) {
+            var bg = type === 'success' ? 'bg-success' : (type === 'error' ? 'bg-danger' : 'bg-secondary');
+            var id = 't' + Date.now();
+            var html = '<div class="toast '+bg+' text-white" id="'+id+'" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="min-width:240px;">' +
+                       '  <div class="toast-body">'+ message +'</div>' +
+                       '</div>';
+            $('#toast-container').append(html);
+            $('#'+id).toast('show').on('hidden.bs.toast', function(){ $(this).remove(); });
+        }
+
         $(document).ready(function () {
             var token = $('#__AjaxAntiForgeryForm input[name="__RequestVerificationToken"]').val();
             var userTableBody = $('#user-table-body');
 
-            $('#createUserBtn').on('click', function() {
-                $('#userModalLabel').text('Create New User');
-                $('#userModalBody').load('@Url.Action("_Create", "Users")', function() {
-                    $('#userModal').modal('show');
-                    $.validator.unobtrusive.parse('#userForm');
-                });
-            });
-
-            userTableBody.on('click', '.js-edit-user', function() {
-                var userId = $(this).data('id');
-                $('#userModalLabel').text('Edit User');
-                $('#userModalBody').load('@Url.Action("_Edit", "Users")/' + userId, function() {
-                    $('#userModal').modal('show');
-                    $.validator.unobtrusive.parse('#userForm');
-                });
-            });
-
-            $('body').on('submit', '#userForm', function(e) {
-                e.preventDefault();
-                var form = $(this);
-                if (form.valid()) {
-                    $.ajax({
-                        url: form.attr('action'),
-                        type: 'POST',
-                        data: form.serialize(),
-                        success: function(response) {
-                            if (response.success) {
-                                $('#userModal').modal('hide');
-                                var userId = $(response.view).attr('id').replace('user-row-', '');
-                                var existingRow = $('#user-row-' + userId);
-                                if(existingRow.length > 0) {
-                                    existingRow.replaceWith(response.view);
-                                } else {
-                                    userTableBody.append(response.view);
-                                }
-                            } else {
-                                $('#userModalBody').html(response);
-                                $.validator.unobtrusive.parse('#userForm');
-                            }
-                        }
-                    });
-                }
+            $('#confirmDeleteBtn').on('click', function () {
+                var id = $('#deleteModal').data('id');
             });
 
             var userIdToDelete;
@@ -161,7 +199,7 @@
                 userIdToDelete = $(this).data('id');
                 var userName = $(this).data('name');
                 $('#deleteUserName').text(userName);
-                $('#deleteModal').modal('show');
+                $('#deleteModal').data('id', userIdToDelete).modal('show');
             });
 
             $('#confirmDeleteBtn').on('click', function() {
@@ -170,41 +208,23 @@
                     type: 'POST',
                     data: { __RequestVerificationToken: token },
                     success: function (response) {
-                        if(response.success) {
-                            $('#user-row-' + userIdToDelete).fadeOut(300, function() { $(this).remove(); });
+                        if (response.success) {
+                            $('#user-row-' + userIdToDelete).fadeOut(300, function () { $(this).remove(); });
                             $('#deleteModal').modal('hide');
+                            showToast('Deleted successfully', 'success');
+                        } else {
+                            showToast('Delete failed', 'error');
                         }
                     }
                 });
             });
-
-        userTableBody.on('click', '.js-view-details', function () {
-            var userId = $(this).data('id');
-            $('#modal-content-details').hide();
-            $('#modal-loader').show();
-            $.get('@Url.Action("GetUserDetailsJson", "Users")', { id: userId }, function (data) {
-                $('#modalUsername').text(data.Username);
-                $('#modalFullName').text(data.FullName);
-                $('#modalEmail').text(data.Email);
-                $('#modalPhoneNumber').text(data.PhoneNumber || 'N/A');
-                $('#modalStudentId').text(data.StudentId || 'N/A');
-                $('#modalRole').text(data.Role);
-                $('#modalStatus').html(data.IsActive ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-secondary">Locked</span>');
-                $('#modalEmailConfirmed').html(data.EmailConfirmed ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-warning">No</span>');
-                $('#modalCreatedDate').text(data.CreatedDate);
-                $('#modalLastLogin').text(data.LastLoginDate);
-                $('#modal-loader').hide();
-                $('#modal-content-details').show();
-            });
-        });
-
 
             userTableBody.on('click', '.js-toggle-lock', function () {
                 var button = $(this);
                 var userId = button.data('id');
                 var currentStatus = button.data('status') === 'true';
                 var actionUrl = currentStatus ? '@Url.Action("Lock", "Users")' : '@Url.Action("Unlock", "Users")';
-
+                if (!confirm(currentStatus ? 'Lock this user?' : 'Unlock this user?')) { return; }
                 $.post(actionUrl, { id: userId, __RequestVerificationToken: token }, function (response) {
                     if (response.success) {
                         var statusText = $('#status-text-' + userId);
@@ -213,11 +233,15 @@
                             statusText.text('Locked').removeClass('badge-success').addClass('badge-secondary');
                             lockButtonText.text('Unlock');
                             button.removeClass('btn-secondary').addClass('btn-primary').data('status', 'false');
+                            showToast('Locked user', 'success');
                         } else {
                             statusText.text('Active').removeClass('badge-secondary').addClass('badge-success');
                             lockButtonText.text('Lock');
                             button.removeClass('btn-primary').addClass('btn-secondary').data('status', 'true');
+                            showToast('Unlocked user', 'success');
                         }
+                    } else {
+                        showToast('Operation failed', 'error');
                     }
                 });
             });

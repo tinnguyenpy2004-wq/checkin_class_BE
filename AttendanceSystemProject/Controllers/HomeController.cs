@@ -37,7 +37,7 @@ namespace AttendanceSystemProject.Controllers
         {
             try
             {
-                dbService.SeedSampleData();
+                DatabaseTestService.SeedSampleData();
                 TempData["Message"] = "Đã tạo dữ liệu mẫu thành công!";
             }
             catch (Exception ex)
