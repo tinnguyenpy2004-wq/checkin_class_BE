@@ -278,11 +278,6 @@
     <Content Include="Views\Dashboard\AdminDashboard.cshtml" />
     <Content Include="Views\Dashboard\OrganizerDashboard.cshtml" />
     <Content Include="Views\Dashboard\StudentDashboard.cshtml" />
-    <Content Include="Views\Users\UserManagement.cshtml" />
-    <Content Include="Views\Users\_UserForm.cshtml" />
-    <Content Include="Views\Users\_UserRow.cshtml" />
-    <Content Include="Views\AuditLogs\Index.cshtml" />
-    <Content Include="Views\Dashboard\ListForAdmin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
