@@ -290,6 +290,11 @@
     <Content Include="Views\List\ListForAdmin.cshtml" />
     <Content Include="Views\List\ListForTeacher.cshtml" />
     <Content Include="Views\List\ListForStudent.cshtml" />
+    <Content Include="Views\Departments\Details.cshtml" />
+    <Content Include="Views\Departments\Edit.cshtml" />
+    <Content Include="Views\Departments\Index.cshtml" />
+    <Content Include="Views\Departments\Create.cshtml" />
+    <Content Include="Views\Departments\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
