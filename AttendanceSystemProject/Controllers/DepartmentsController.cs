@@ -1,4 +1,3 @@
-
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -11,26 +10,6 @@ namespace AttendanceSystemProject.Controllers
     {
         private readonly AttendanceSystemContext _db = new AttendanceSystemContext();
 
-<<<<<<< Updated upstream
-        // GET: Departments
-        public ActionResult Index()
-        {
-            try
-            {
-                var departments = dbService.GetAllDepartments();
-                ViewBag.Message = "Kết nối database thành công!";
-                return View(departments);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = "Lỗi kết nối database: " + ex.Message;
-                return View(new List<Department>());
-            }
-        }
-
-        // GET: Departments/Create
-        public ActionResult Create()
-=======
         // ============ READ ============
         // Cho Admin + Teacher (tùy bạn có muốn Student xem hay không)
         [Authorize(Roles = "Admin,Teacher")]
@@ -45,38 +24,15 @@ namespace AttendanceSystemProject.Controllers
 
         [Authorize(Roles = "Admin,Teacher")]
         public ActionResult Details(int id)
->>>>>>> Stashed changes
         {
             var d = _db.Departments.Find(id);
             if (d == null) return HttpNotFound();
             return View(d);
         }
 
-<<<<<<< Updated upstream
-        // POST: Departments/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(Department department)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    department.CreatedDate = DateTime.Now;
-                    int newId = dbService.AddDepartment(department);
-                    TempData["Success"] = "Thêm khoa thành công!";
-                    return RedirectToAction("Index");
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Lỗi khi thêm khoa: " + ex.Message);
-                }
-            }
-=======
         // ============ CREATE ============
         [Authorize(Roles = "Admin")]
         public ActionResult Create() => View();
->>>>>>> Stashed changes
 
         [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
         public ActionResult Create(Department model)
@@ -164,4 +120,3 @@ namespace AttendanceSystemProject.Controllers
         }
     }
 }
-

@@ -4,19 +4,14 @@
 }
 <h2>Chi tiết</h2>
 <dl class="dl-horizontal">
-    <dt>Tên</dt>
-    <dd>@Model.Name</dd>
-    <dt>Mã</dt>
-    <dd>@Model.Code</dd>
-    <dt>Kích hoạt</dt>
-    <dd>@(Model.IsActive ? "Đang dùng" : "Tắt")</dd>
-    <dt>Mô tả</dt>
-    <dd>@Model.Description</dd>
+    <dt>Tên</dt><dd>@Model.Name</dd>
+    <dt>Mã</dt><dd>@Model.Code</dd>
+    <dt>Kích hoạt</dt><dd>@(Model.IsActive ? "Đang dùng" : "Tắt")</dd>
+    <dt>Mô tả</dt><dd>@Model.Description</dd>
 </dl>
 <p>
     @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-default" })
-    @if (User.IsInRole("Admin"))
-    {
+    @if (User.IsInRole("Admin")) {
         @Html.Raw(" ")
         @Html.ActionLink("Sửa", "Edit", new { id = Model.DepartmentId }, new { @class = "btn btn-warning" })
     }
