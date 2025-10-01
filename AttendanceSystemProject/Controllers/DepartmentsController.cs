@@ -1,168 +1,143 @@
-using System;
 using System.Linq;
-using System.Net;
+using System.Web;
 using System.Web.Mvc;
-using AttendanceSystemProject.Models; // Đảm bảo bạn đã import namespace chứa Model
+using AttendanceSystemProject.Models;
+using AttendanceSystemProject.Services;
 
 namespace AttendanceSystemProject.Controllers
 {
-    // Áp dụng Authorize ở cấp controller để đảm bảo chỉ người dùng đã đăng nhập mới có thể truy cập
-    // Các action cụ thể sẽ có quyền riêng nếu cần
-    [Authorize]
     public class DepartmentsController : Controller
     {
-        // Khởi tạo đối tượng DbContext để tương tác với cơ sở dữ liệu
-        private readonly AttendanceSystemContext _db = new AttendanceSystemContext();
-
-        // ============ READ (Đọc dữ liệu) ============
+        private DatabaseService dbService = new DatabaseService();
 
         // GET: Departments
-        // Cho phép Admin và Teacher xem danh sách khoa
-        [Authorize(Roles = "Admin,Teacher")]
+        [AllowAnonymous]
         public ActionResult Index()
         {
-            // Lấy danh sách khoa, sắp xếp khoa đang hoạt động lên đầu
-            var departments = _db.Departments
-                                 .OrderByDescending(d => d.IsActive) // Giả sử bạn có cột IsActive để chỉ trạng thái
-                                 .ThenBy(d => d.Name)
-                                 .ToList();
-            return View(departments);
-        }
-
-        // GET: Departments/Details/5
-        // Cho phép Admin và Teacher xem chi tiết một khoa
-        [Authorize(Roles = "Admin,Teacher")]
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                var departments = dbService.GetAllDepartments();
+                ViewBag.Message = "Kết nối database thành công!";
+                return View(departments);
             }
-            Department department = _db.Departments.Find(id);
-            if (department == null)
+            catch (Exception ex)
             {
-                return HttpNotFound();
+                // Ẩn thông báo lỗi kết nối trên UI, chỉ trả về danh sách rỗng
+                return View(new List<Department>());
             }
-            return View(department);
         }
-
-        // ============ CREATE (Tạo mới) ============
 
         // GET: Departments/Create
-        // Chỉ Admin mới có quyền tạo mới
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Organizer")]
         public ActionResult Create()
         {
             return View();
+        // ============ READ ============
+        // Cho Admin + Teacher (tùy bạn có muốn Student xem hay không)
+        [Authorize(Roles = "Admin,Teacher")]
+        public ActionResult Index()
+        {
+            var list = _db.Departments
+                          .OrderByDescending(d => d.IsActive)
+                          .ThenBy(d => d.Name)
+                          .ToList();
+            return View(list);
         }
 
-        // POST: Departments/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public ActionResult Create([Bind(Include = "DepartmentId,Name,Code,Description,IsActive")] Department department)
+        [Authorize(Roles = "Admin,Teacher")]
+        public ActionResult Details(int id)
         {
-            // Kiểm tra xem mã khoa đã tồn tại chưa
-            if (_db.Departments.Any(x => x.Code == department.Code))
-            {
-                ModelState.AddModelError("Code", "Mã khoa này đã tồn tại.");
-            }
-
-            if (ModelState.IsValid)
-            {
-                _db.Departments.Add(department);
-                _db.SaveChanges();
-                TempData["msg"] = "Tạo khoa mới thành công!"; // Thông báo cho người dùng
-                return RedirectToAction("Index");
-            }
-
-            return View(department);
+            var d = _db.Departments.Find(id);
+            if (d == null) return HttpNotFound();
+            return View(d);
         }
 
-        // ============ EDIT (Chỉnh sửa) ============
-
-        // GET: Departments/Edit/5
-        // Chỉ Admin mới có quyền chỉnh sửa
+        // ============ CREATE ============
         [Authorize(Roles = "Admin")]
-        public ActionResult Edit(int? id)
+        public ActionResult Create() => View();
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
+        public ActionResult Create(Department model)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Department department = _db.Departments.Find(id);
-            if (department == null)
-            {
-                return HttpNotFound();
-            }
-            return View(department);
-        }
+            // Kiểm tra trùng Code
+            if (_db.Departments.Any(x => x.Code == model.Code))
+                ModelState.AddModelError("Code", "Mã khoa/phòng đã tồn tại.");
 
-        // POST: Departments/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public ActionResult Edit([Bind(Include = "DepartmentId,Name,Code,Description,IsActive")] Department department)
-        {
-            // Kiểm tra mã khoa trùng lặp (loại trừ chính nó)
-            if (_db.Departments.Any(x => x.Code == department.Code && x.DepartmentId != department.DepartmentId))
-            {
-                ModelState.AddModelError("Code", "Mã khoa này đã tồn tại.");
-            }
+            if (!ModelState.IsValid) return View(model);
 
-            if (ModelState.IsValid)
-            {
-                _db.Entry(department).State = System.Data.Entity.EntityState.Modified;
-                _db.SaveChanges();
-                TempData["msg"] = "Cập nhật thông tin khoa thành công!";
-                return RedirectToAction("Index");
-            }
-            return View(department);
-        }
-
-        // ============ DELETE (Xóa) ============
-
-        // GET: Departments/Delete/5
-        // Chỉ Admin mới có quyền xóa
-        [Authorize(Roles = "Admin")]
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Department department = _db.Departments.Find(id);
-            if (department == null)
-            {
-                return HttpNotFound();
-            }
-            return View(department);
-        }
-
-        // POST: Departments/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Department department = _db.Departments.Find(id);
-            if (department == null)
-            {
-                return HttpNotFound();
-            }
-            _db.Departments.Remove(department);
+            _db.Departments.Add(model);
             _db.SaveChanges();
-            TempData["msg"] = "Xóa khoa thành công!";
+            TempData["msg"] = "Tạo khoa/phòng thành công.";
             return RedirectToAction("Index");
         }
 
-        // Giải phóng tài nguyên DbContext sau khi controller hoàn thành công việc
+        // ============ EDIT ============
+        [Authorize(Roles = "Admin")]
+        public ActionResult Edit(int id)
+        {
+            var d = _db.Departments.Find(id);
+            if (d == null) return HttpNotFound();
+            return View(d);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
+        public ActionResult Edit(Department model)
+        {
+            // Unique Code ngoại trừ chính nó
+            if (_db.Departments.Any(x => x.Code == model.Code && x.DepartmentId != model.DepartmentId))
+                ModelState.AddModelError("Code", "Mã khoa/phòng đã tồn tại.");
+
+            if (!ModelState.IsValid) return View(model);
+
+            var d = _db.Departments.Find(model.DepartmentId);
+            if (d == null) return HttpNotFound();
+
+            d.Name = model.Name;
+            d.Code = model.Code;
+            d.Description = model.Description;
+            d.IsActive = model.IsActive;
+
+            _db.SaveChanges();
+            TempData["msg"] = "Cập nhật khoa/phòng thành công.";
+            return RedirectToAction("Index");
+        }
+
+        // ============ DELETE ============
+        [Authorize(Roles = "Admin")]
+        public ActionResult Delete(int id)
+        {
+            var d = _db.Departments.Find(id);
+            if (d == null) return HttpNotFound();
+            return View(d);
+        }
+
+        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            var d = _db.Departments.Find(id);
+            if (d == null) return HttpNotFound();
+
+            _db.Departments.Remove(d);
+            _db.SaveChanges();
+            TempData["msg"] = "Xóa khoa/phòng thành công.";
+            return RedirectToAction("Index");
+        }
+
+        // ============ Toggle kích hoạt nhanh (tùy chọn) ============
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
+        public ActionResult ToggleActive(int id)
+        {
+            var d = _db.Departments.Find(id);
+            if (d == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            d.IsActive = !d.IsActive;
+            _db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                _db.Dispose();
-            }
+            if (disposing) _db.Dispose();
             base.Dispose(disposing);
         }
     }
