@@ -1,0 +1,62 @@
+﻿@model AttendanceSystemProject.ViewModels.UserUpsertVm
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "userForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.UserId)
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Username, new { @class = "control-label" })
+        @Html.TextBoxFor(m => m.Username, new { @class = "form-control", @required = "required" })
+        @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.FullName, new { @class = "control-label" })
+        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Email, new { @class = "control-label" })
+        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @type = "email", @required = "required" })
+        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.PhoneNumber, new { @class = "control-label" })
+        @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.StudentId, new { @class = "control-label" })
+        @Html.TextBoxFor(m => m.StudentId, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.StudentId, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Role, new { @class = "control-label" })
+        @Html.DropDownListFor(m => m.Role, (SelectList)ViewBag.RoleList, "Select Role", new { @class = "form-control", @required = "required" })
+        @Html.ValidationMessageFor(m => m.Role, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.DepartmentId, new { @class = "control-label" })
+        @Html.DropDownListFor(
+    m => m.DepartmentId,
+    new SelectList(ViewBag.Departments ?? new List<object>(), "DepartmentId", "Name", Model.DepartmentId),
+    "Select Department",
+    new { @class = "form-control" }
+)
+
+        @Html.ValidationMessageFor(m => m.DepartmentId, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group text-right">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">
+            @(Model.UserId.HasValue ? "Update" : "Create")
+        </button>
+    </div>
+}

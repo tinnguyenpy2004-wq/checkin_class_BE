@@ -259,6 +259,18 @@
     <Content Include="Views\Dashboard\AdminDashboard.cshtml" />
     <Content Include="Views\Dashboard\TeacherDashboard.cshtml" />
     <Content Include="Views\Dashboard\StudentDashboard.cshtml" />
+<<<<<<< Updated upstream
+=======
+    <Content Include="Views\Users\UserManagement.cshtml" />
+    <Content Include="Views\Users\_UserForm.cshtml" />
+    <Content Include="Views\Users\_UserRow.cshtml" />
+    <Content Include="Views\AuditLogs\Index.cshtml" />
+    <Content Include="Views\Departments\Index.cshtml" />
+    <Content Include="Views\Departments\Details.cshtml" />
+    <Content Include="Views\Departments\Create.cshtml" />
+    <Content Include="Views\Departments\Edit.cshtml" />
+    <Content Include="Views\Departments\Delete.cshtml" />
+>>>>>>> Stashed changes
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

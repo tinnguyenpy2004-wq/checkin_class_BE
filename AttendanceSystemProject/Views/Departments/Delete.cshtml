@@ -1,0 +1,17 @@
+@model AttendanceSystemProject.Models.Department
+@{
+    ViewBag.Title = "Xóa khoa/phòng";
+}
+<h2>Xóa</h2>
+<div class="alert alert-warning">
+    Bạn chắc chắn muốn xóa <b>@Model.Name (@Model.Code)</b>?
+</div>
+
+@using (Html.BeginForm("Delete", "Departments", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.DepartmentId)
+
+    <button class="btn btn-danger" type="submit">Xóa</button>
+    @Html.ActionLink("Hủy", "Index", null, new { @class = "btn btn-default" })
+}
