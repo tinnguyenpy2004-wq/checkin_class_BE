@@ -12,10 +12,17 @@ namespace AttendanceSystemProject.Models
 
         [Required]
         [StringLength(100)]
-        public string Title { get; set; }
+        public string Name { get; set; } 
+
+        [StringLength(50)] 
+        public string Code { get; set; } 
 
         [StringLength(1000)]
         public string Description { get; set; }
+
+        public int? OrganizerId { get; set; } 
+
+        public int? DepartmentId { get; set; } 
 
         public DateTime StartDate { get; set; }
 
@@ -26,11 +33,17 @@ namespace AttendanceSystemProject.Models
 
         public int? MaxParticipants { get; set; }
 
-        public bool IsActive { get; set; } = true;
+        [StringLength(50)] 
+        public string Status { get; set; } 
+
+        public bool RequiresCertificate { get; set; } 
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-        // Navigation properties
+        public string QRCodeData { get; set; } 
+
+        public DateTime? QRCodeExpiry { get; set; } 
+    
         public virtual ICollection<EventParticipant> EventParticipants { get; set; }
         public virtual ICollection<Attendance> Attendances { get; set; }
         public virtual ICollection<Certificate> Certificates { get; set; }
