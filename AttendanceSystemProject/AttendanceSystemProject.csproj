@@ -286,6 +286,10 @@
     <Content Include="Views\Users\_UserForm.cshtml" />
     <Content Include="Views\Users\_UserRow.cshtml" />
     <Content Include="Views\AuditLogs\Index.cshtml" />
+    <Content Include="Views\List\List.cshtml" />
+    <Content Include="Views\List\ListForAdmin.cshtml" />
+    <Content Include="Views\List\ListForTeacher.cshtml" />
+    <Content Include="Views\List\ListForStudent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

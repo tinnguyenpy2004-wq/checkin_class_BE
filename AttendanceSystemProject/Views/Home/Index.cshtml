@@ -6,7 +6,7 @@
     <section class="row" aria-labelledby="aspnetTitle">
         <h1 id="title">Hệ Thống Điểm Danh</h1>
         <p class="lead">Hệ thống quản lý điểm danh cho trường học và sự kiện.</p>
-        
+
         @* Ẩn các thông báo kết nối DB và dữ liệu mẫu *@
 
         @* Nút xóa dữ liệu đã được ẩn khỏi trang Home *@
@@ -20,15 +20,31 @@
             </p>
             <p><a class="btn btn-outline-dark" href="@Url.Action("Index", "Departments")">Xem Danh sách Khoa &raquo;</a></p>
         </section>
+
+        <!-- MỤC MỚI ĐƯỢC THÊM VÀO -->
+        <section class="col-md-4" aria-labelledby="listViewTitle">
+            <h2 id="listViewTitle">Xem danh sách cá nhân</h2>
+            <p>
+                Xem danh sách lớp học và sự kiện phù hợp với vai trò của bạn (Admin, Giáo viên hoặc Sinh viên).
+            </p>
+            <p><a class="btn btn-outline-dark" href="@Url.Action("List", "List")">Xem danh sách &raquo;</a></p>
+        </section>
+        <!-- KẾT THÚC MỤC MỚI -->
+
         <section class="col-md-4" aria-labelledby="librariesTitle">
             <h2 id="librariesTitle">Get more libraries</h2>
             <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
             <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
         </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+
+        @* Tôi đã di chuyển section Web Hosting xuống hàng mới để bố cục cân đối hơn *@
+        @* Bạn có thể xóa 2 section mặc định cuối nếu không cần thiết *@
+        <div class="col-md-4" style="margin-top: 20px;">
+            <section aria-labelledby="hostingTitle">
+                <h2 id="hostingTitle">Web Hosting</h2>
+                <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
+                <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+            </section>
+        </div>
     </div>
 </main>
