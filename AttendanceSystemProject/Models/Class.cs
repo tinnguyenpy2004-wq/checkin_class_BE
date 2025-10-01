@@ -12,11 +12,11 @@ namespace AttendanceSystemProject.Models
 
         [Required]
         [StringLength(100)]
-        public string Name { get; set; }
+        public string ClassName { get; set; }
 
         [Required]
         [StringLength(20)]
-        public string Code { get; set; }
+        public string ClassCode { get; set; }
 
         [StringLength(500)]
         public string Description { get; set; }

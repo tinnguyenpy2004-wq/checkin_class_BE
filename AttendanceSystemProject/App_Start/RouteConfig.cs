@@ -14,6 +14,24 @@ namespace AttendanceSystemProject
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "Healthz",
+                url: "healthz",
+                defaults: new { controller = "Health", action = "Healthz" }
+            );
+
+            routes.MapRoute(
+                name: "RobotsTxt",
+                url: "robots.txt",
+                defaults: new { controller = "Info", action = "Robots" }
+            );
+
+            routes.MapRoute(
+                name: "SecurityTxt",
+                url: ".well-known/security.txt",
+                defaults: new { controller = "Info", action = "Security" }
+            );
+
+            routes.MapRoute(
     name: "Default",
     url: "{controller}/{action}/{id}",
     defaults: new { controller = "Account", action = "Register", id = UrlParameter.Optional }

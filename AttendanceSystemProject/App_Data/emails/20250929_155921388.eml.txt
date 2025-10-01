@@ -1,0 +1,5 @@
+FROM: longvbse184332@fpt.edu.vn
+TO: tuandnbse185029@fpt.edu.vn
+SUBJECT: [Attendance] Xác thực email
+
+<p>Mã xác thực email của bạn là: <b>718324</b> (hết hạn trong 10 phút).</p>

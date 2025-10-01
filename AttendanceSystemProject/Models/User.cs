@@ -44,6 +44,11 @@ namespace AttendanceSystemProject.Models
         [StringLength(255)]
         public string PasswordHash { get; set; }
 
+        // Lockout & security
+        public int AccessFailedCount { get; set; }
+        public DateTime? LockoutEnd { get; set; }
+        public DateTime? LastPasswordChangeAt { get; set; }
+
         [ForeignKey("DepartmentId")]
         public virtual Department Department { get; set; }
     }

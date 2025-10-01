@@ -15,7 +15,10 @@ namespace AttendanceSystemProject
                 AuthenticationType = "AppCookie",
                 LoginPath = new PathString("/Account/Login"),
                 ExpireTimeSpan = TimeSpan.FromHours(8),
-                SlidingExpiration = true
+                SlidingExpiration = true,
+                CookieHttpOnly = true,
+                CookieSecure = CookieSecureOption.Always,
+                CookieSameSite = Microsoft.Owin.SameSiteMode.Strict
             });
         }
     }

@@ -7,43 +7,9 @@
         <h1 id="title">Hệ Thống Điểm Danh</h1>
         <p class="lead">Hệ thống quản lý điểm danh cho trường học và sự kiện.</p>
         
-        @if (ViewBag.DatabaseConnection != null)
-        {
-            <div class="alert alert-@ViewBag.ConnectionStatus">
-                <strong>@ViewBag.DatabaseConnection</strong>
-                @if (ViewBag.DepartmentCount != null)
-                {
-                    <br />
-                    <text>Số khoa: @ViewBag.DepartmentCount | Số người dùng: @ViewBag.UserCount</text>
-                }
-            </div>
-        }
+        @* Ẩn các thông báo kết nối DB và dữ liệu mẫu *@
 
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger">
-                <strong>Lỗi:</strong> @ViewBag.Error
-            </div>
-        }
-
-        @if (TempData["Message"] != null)
-        {
-            <div class="alert alert-success">
-                @TempData["Message"]
-            </div>
-        }
-
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger">
-                @TempData["Error"]
-            </div>
-        }
-
-        <p>
-            <a href="@Url.Action("Index", "Departments")" class="btn btn-primary btn-md">Quản lý Khoa &raquo;</a>
-            <a href="@Url.Action("SeedData", "Home")" class="btn btn-success btn-md">Tạo dữ liệu mẫu &raquo;</a>
-        </p>
+        @* Nút xóa dữ liệu đã được ẩn khỏi trang Home *@
     </section>
 
     <div class="row">
