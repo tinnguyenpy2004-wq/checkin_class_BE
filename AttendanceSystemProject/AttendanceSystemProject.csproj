@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -179,6 +179,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\ListController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\DepartmentsController.cs" />
@@ -188,7 +189,6 @@
     <Compile Include="Controllers\HealthController.cs" />
     <Compile Include="Controllers\InfoController.cs" />
     <Compile Include="Global.asax.cs">
-    <Compile Include="Controllers\ListController.cs" />
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Attendance.cs" />
@@ -211,14 +211,17 @@
     <Compile Include="Services\DatabaseService.cs" />
     <Compile Include="Services\DatabaseTestService.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Utilities\AdminViewModel.cs" />
     <Compile Include="Utilities\EmailSender.cs" />
     <Compile Include="Utilities\FileLogger.cs" />
     <Compile Include="Utilities\OtpHasher.cs" />
     <Compile Include="Utilities\RateLimiter.cs" />
     <Compile Include="Utilities\OtpGenerator.cs" />
-    <Compile Include="ViewModels\AccountViewModels.cs" />
+    <Compile Include="ViewModels\TeacherViewModel.cs" />
+    <Compile Include="ViewModels\StudentViewModel.cs" />
+    <Compile Include="ViewModels\EventViewModel.cs" />
+    <Compile Include="ViewModels\ClassViewModel.cs" />
     <Compile Include="ViewModels\AdminViewModel.cs" />
+    <Compile Include="ViewModels\AccountViewModels.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
@@ -283,11 +286,6 @@
     <Content Include="Views\Users\_UserForm.cshtml" />
     <Content Include="Views\Users\_UserRow.cshtml" />
     <Content Include="Views\AuditLogs\Index.cshtml" />
-    <Content Include="Views\Departments\Index.cshtml" />
-    <Content Include="Views\Departments\Details.cshtml" />
-    <Content Include="Views\Departments\Create.cshtml" />
-    <Content Include="Views\Departments\Edit.cshtml" />
-    <Content Include="Views\Departments\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
