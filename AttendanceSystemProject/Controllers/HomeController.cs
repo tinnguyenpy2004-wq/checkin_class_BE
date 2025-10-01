@@ -63,5 +63,6 @@ namespace AttendanceSystemProject.Controllers
 
             return View();
         }
+
     }
 }

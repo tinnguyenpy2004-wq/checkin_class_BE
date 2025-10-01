@@ -12,31 +12,27 @@
     <td>
         <span class="badge @roleBadge">@roleName</span>
     </td>
+    <td>@Model.CreatedDate.ToString("yyyy-MM-dd")</td>
+    <td>@(Model.LastLoginDate?.ToString("yyyy-MM-dd") ?? "Never")</td>
     <td>
-        <span id="status-text-@Model.UserId" class="badge @(Model.IsActive ? "badge-success" : "badge-secondary")">
-            @(Model.IsActive ? "Active" : "Locked")
-        </span>
-    </td>
-    <td>
-        <button type="button" class="btn btn-info btn-sm js-view-details" data-id="@Model.UserId" data-toggle="modal" data-target="#detailsModal">
-            Details
-        </button>
-        @if (User.IsInRole("Admin")) {
-            @:|
-            <button type="button" class="btn btn-warning btn-sm js-edit-user" data-id="@Model.UserId">
-                Edit
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-info btn-sm js-view-details" data-id="@Model.UserId" data-toggle="modal" data-target="#detailsModal">
+                Details
             </button>
-            @:|
-            <button type="button" class="btn btn-danger btn-sm js-delete-user" data-id="@Model.UserId" data-name="@Model.FullName">
-                Delete
-            </button>
-            @:|
-            <button type="button"
-                    class="btn @(Model.IsActive ? "btn-secondary" : "btn-primary") btn-sm js-toggle-lock"
-                    data-id="@Model.UserId"
-                    data-status="@Model.IsActive.ToString().ToLower()">
-                <span id="lock-text-@Model.UserId">@(Model.IsActive ? "Lock" : "Unlock")</span>
-            </button>
-        }
+            @if (User.IsInRole("Admin")) {
+                <button type="button" class="btn btn-warning btn-sm js-edit-user" data-id="@Model.UserId">
+                    Edit
+                </button>
+                <button type="button" class="btn btn-danger btn-sm js-delete-user" data-id="@Model.UserId" data-name="@Model.FullName">
+                    Delete
+                </button>
+                <button type="button"
+                        class="btn @(Model.IsActive ? "btn-secondary" : "btn-primary") btn-sm js-toggle-lock"
+                        data-id="@Model.UserId"
+                        data-status="@Model.IsActive.ToString().ToLower()">
+                    <span id="lock-text-@Model.UserId">@(Model.IsActive ? "Lock" : "Unlock")</span>
+                </button>
+            }
+        </div>
     </td>
 </tr>

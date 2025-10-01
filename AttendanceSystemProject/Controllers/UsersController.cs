@@ -106,13 +106,14 @@ namespace AttendanceSystemProject.Controllers
 
         public PartialViewResult _Create()
         {
-           
             ViewBag.RoleList = new SelectList(
                 Enum.GetValues(typeof(UserRole)).Cast<UserRole>().Select(v => new SelectListItem
                 {
                     Text = v.ToString(),
                     Value = ((int)v).ToString()
                 }).ToList(), "Value", "Text");
+
+            ViewBag.Departments = db.Departments.Where(d => d.IsActive).OrderBy(d => d.Name).ToList();
 
             return PartialView("_UserForm", new AttendanceSystemProject.ViewModels.UserUpsertVm());
         }
@@ -146,11 +147,25 @@ namespace AttendanceSystemProject.Controllers
 
                 if (Request.IsAjaxRequest())
                 {
-                    return Json(new { success = true, view = RenderRazorViewToString("_UserRow", user) });
+                    return Json(new { success = true, userId = user.UserId });
                 }
                 TempData["SuccessMessage"] = "User created successfully!";
                 return RedirectToAction("UserManagement");
             }
+            
+            if (Request.IsAjaxRequest())
+            {
+                ViewBag.RoleList = new SelectList(
+                    Enum.GetValues(typeof(UserRole)).Cast<UserRole>().Select(v => new SelectListItem
+                    {
+                        Text = v.ToString(),
+                        Value = ((int)v).ToString()
+                    }).ToList(), "Value", "Text");
+
+                ViewBag.Departments = db.Departments.Where(d => d.IsActive).OrderBy(d => d.Name).ToList();
+                return PartialView("_UserForm", vm);
+            }
+            
             return PartialView("_UserForm", vm);
         }
 
@@ -169,13 +184,14 @@ namespace AttendanceSystemProject.Controllers
                 return PartialView("_UserForm", new AttendanceSystemProject.ViewModels.UserUpsertVm());
             }
 
-      
             ViewBag.RoleList = new SelectList(
                 Enum.GetValues(typeof(UserRole)).Cast<UserRole>().Select(v => new SelectListItem
                 {
                     Text = v.ToString(),
                     Value = ((int)v).ToString()
                 }).ToList(), "Value", "Text", user.Role);
+
+            ViewBag.Departments = db.Departments.Where(d => d.IsActive).OrderBy(d => d.Name).ToList();
 
             var vm = new AttendanceSystemProject.ViewModels.UserUpsertVm
             {
@@ -227,10 +243,24 @@ namespace AttendanceSystemProject.Controllers
 
                 if (Request.IsAjaxRequest())
                 {
-                    return Json(new { success = true, view = RenderRazorViewToString("_UserRow", userInDb) });
+                    return Json(new { success = true, userId = userInDb.UserId, view = RenderRazorViewToString("_UserRow", userInDb) });
                 }
                 return RedirectToAction("UserManagement");
             }
+            
+            if (Request.IsAjaxRequest())
+            {
+                ViewBag.RoleList = new SelectList(
+                    Enum.GetValues(typeof(UserRole)).Cast<UserRole>().Select(v => new SelectListItem
+                    {
+                        Text = v.ToString(),
+                        Value = ((int)v).ToString()
+                    }).ToList(), "Value", "Text", vm.Role);
+
+                ViewBag.Departments = db.Departments.Where(d => d.IsActive).OrderBy(d => d.Name).ToList();
+                return PartialView("_UserForm", vm);
+            }
+            
             return PartialView("_UserForm", vm);
         }
 
@@ -362,6 +392,7 @@ namespace AttendanceSystemProject.Controllers
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "users.csv");
         }
+
 
         protected override void Dispose(bool disposing)
         {
