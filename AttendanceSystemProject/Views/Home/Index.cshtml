@@ -6,24 +6,34 @@
     <section class="row" aria-labelledby="aspnetTitle">
         <h1 id="title">Hệ Thống Điểm Danh</h1>
         <p class="lead">Hệ thống quản lý điểm danh cho trường học và sự kiện.</p>
-        
-        @* Ẩn các thông báo kết nối DB và dữ liệu mẫu *@
 
-        @* Nút xóa dữ liệu đã được ẩn khỏi trang Home *@
+        @* Ẩn các thông báo kết nối DB và dữ liệu mẫu *@
     </section>
 
     <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Quản lý Khoa</h2>
+        <section class="col-md-4" aria-labelledby="departmentsTitle">
+            <h2 id="departmentsTitle">Quản lý Khoa</h2>
             <p>
                 Quản lý thông tin các khoa trong trường học. Thêm, sửa, xóa và xem danh sách các khoa.
             </p>
             <p><a class="btn btn-outline-dark" href="@Url.Action("Index", "Departments")">Xem Danh sách Khoa &raquo;</a></p>
         </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+        <section class="col-md-4" aria-labelledby="dashboardTitle">
+            <h2 id="dashboardTitle">Danh sách theo Vai trò</h2>
+            <p>
+                Xem danh sách lớp học, sự kiện và các thông tin liên quan dựa trên vai trò của bạn.
+            </p>
+            @if (User.Identity.IsAuthenticated)
+            {
+                string roleText = User.IsInRole("Admin") ? "Danh sách cho Quản trị viên" :
+                                  User.IsInRole("Organizer") ? "Danh sách cho Tổ chức" :
+                                  "Danh sách cho Sinh viên";
+                <p><a class="btn btn-outline-dark" href="@Url.Action("Index", "Dashboard")">@roleText &raquo;</a></p>
+            }
+            else
+            {
+                <p><a class="btn btn-outline-dark" href="@Url.Action("Login", "Account")">Đăng nhập để xem danh sách &raquo;</a></p>
+            }
         </section>
         <section class="col-md-4" aria-labelledby="hostingTitle">
             <h2 id="hostingTitle">Web Hosting</h2>

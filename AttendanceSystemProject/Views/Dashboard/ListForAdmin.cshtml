@@ -1,0 +1,146 @@
+﻿@model AttendanceSystemProject.ViewModels.AdminViewModel
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Danh sách cho Quản trị viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-4">@ViewBag.Greeting</h1>
+        <p class="text-lg mb-6">@ViewBag.RoleText</p>
+
+        <!-- Users Table -->
+        <h2 class="text-2xl font-semibold mb-4">Danh sách người dùng</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white shadow-md rounded-lg">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-2 px-4 text-left">ID</th>
+                        <th class="py-2 px-4 text-left">Tên đăng nhập</th>
+                        <th class="py-2 px-4 text-left">Họ tên</th>
+                        <th class="py-2 px-4 text-left">Email</th>
+                        <th class="py-2 px-4 text-left">Vai trò</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AllUsers != null && Model.AllUsers.Any())
+                    {
+                        foreach (var user in Model.AllUsers)
+                        {
+                            <tr class="border-b">
+                                <td class="py-2 px-4">@user.UserId</td>
+                                <td class="py-2 px-4">@user.Username</td>
+                                <td class="py-2 px-4">@user.FullName</td>
+                                <td class="py-2 px-4">@user.Email</td>
+                                <td class="py-2 px-4">@user.Role</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="5" class="py-2 px-4 text-center">Không có dữ liệu</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Classes Table -->
+        <h2 class="text-2xl font-semibold mt-8 mb-4">Danh sách lớp học</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white shadow-md rounded-lg">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-2 px-4 text-left">ID</th>
+                        <th class="py-2 px-4 text-left">Tên lớp</th>
+                        <th class="py-2 px-4 text-left">Mã lớp</th>
+                        <th class="py-2 px-4 text-left">Giáo viên</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AllClasses != null && Model.AllClasses.Any())
+                    {
+                        foreach (var cls in Model.AllClasses)
+                        {
+                            <tr class="border-b">
+                                <td class="py-2 px-4">@cls.ClassId</td>
+                                <td class="py-2 px-4">@cls.ClassName</td>
+                                <td class="py-2 px-4">@cls.Code</td>
+                                <td class="py-2 px-4">@cls.TeacherName</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="4" class="py-2 px-4 text-center">Không có dữ liệu</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Events Table -->
+        <h2 class="text-2xl font-semibold mt-8 mb-4">Danh sách sự kiện</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white shadow-md rounded-lg">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-2 px-4 text-left">ID</th>
+                        <th class="py-2 px-4 text-left">Tên sự kiện</th>
+                        <th class="py-2 px-4 text-left">Mã sự kiện</th>
+                        <th class="py-2 px-4 text-left">Người tổ chức</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AllEvents != null && Model.AllEvents.Any())
+                    {
+                        foreach (var evt in Model.AllEvents)
+                        {
+                            <tr class="border-b">
+                                <td class="py-2 px-4">@evt.EventId</td>
+                                <td class="py-2 px-4">@evt.EvenName</td>
+                                <td class="py-2 px-4">@evt.Code</td>
+                                <td class="py-2 px-4">@evt.OrganizerName</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="4" class="py-2 px-4 text-center">Không có dữ liệu</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Departments Table -->
+        <h2 class="text-2xl font-semibold mt-8 mb-4">Danh sách phòng ban</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white shadow-md rounded-lg">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-2 px-4 text-left">ID</th>
+                        <th class="py-2 px-4 text-left">Tên phòng ban</th>
+                        <th class="py-2 px-4 text-left">Mã phòng ban</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AllDepartments != null && Model.AllDepartments.Any())
+                    {
+                        foreach (var dept in Model.AllDepartments)
+                        {
+                            <tr class="border-b">
+                                <td class="py-2 px-4">@dept.DepartmentId</td>
+                                <td class="py-2 px-4">@dept.DepartmentName</td>
+                                <td class="py-2 px-4">@dept.Code</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="3" class="py-2 px-4 text-center">Không có dữ liệu</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

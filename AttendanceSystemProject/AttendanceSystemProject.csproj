@@ -210,12 +210,14 @@
     <Compile Include="Services\DatabaseService.cs" />
     <Compile Include="Services\DatabaseTestService.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utilities\AdminViewModel.cs" />
     <Compile Include="Utilities\EmailSender.cs" />
     <Compile Include="Utilities\FileLogger.cs" />
     <Compile Include="Utilities\OtpHasher.cs" />
     <Compile Include="Utilities\RateLimiter.cs" />
     <Compile Include="Utilities\OtpGenerator.cs" />
     <Compile Include="ViewModels\AccountViewModels.cs" />
+    <Compile Include="ViewModels\AdminViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
@@ -280,6 +282,7 @@
     <Content Include="Views\Users\_UserForm.cshtml" />
     <Content Include="Views\Users\_UserRow.cshtml" />
     <Content Include="Views\AuditLogs\Index.cshtml" />
+    <Content Include="Views\Dashboard\ListForAdmin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
