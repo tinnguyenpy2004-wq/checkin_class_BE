@@ -1,12 +1,13 @@
-@model AttendanceSystemProject.Models.Department
+﻿@model AttendanceSystemProject.Models.Department
 @{
-    ViewBag.Title = "Tạo khoa/phòng";
+    ViewBag.Title = "Sửa khoa/phòng";
 }
-<h2>Tạo mới</h2>
+<h2>Sửa</h2>
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
+    @Html.HiddenFor(m => m.DepartmentId)
 
     <div class="form-group">
         <label>Tên</label>

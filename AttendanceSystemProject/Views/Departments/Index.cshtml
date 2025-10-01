@@ -1,10 +1,15 @@
-@model IEnumerable<AttendanceSystemProject.Models.Department>
-
+﻿@model IEnumerable<AttendanceSystemProject.Models.Department>
 @{
-    ViewBag.Title = "Danh sách Khoa";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Departments";
+}
+<h2>Danh sách Khoa/Phòng</h2>
+
+@if (TempData["msg"] != null)
+{
+    <div class="alert alert-success">@TempData["msg"]</div>
 }
 
+<<<<<<< Updated upstream
 <div class="container">
     <h2>Danh sách Khoa</h2>
 
@@ -86,3 +91,50 @@
         </div>
     }
 </div>
+=======
+<p>
+    @if (User.IsInRole("Admin"))
+    {
+        @Html.ActionLink("➕ Tạo mới", "Create", "Departments", null, new { @class = "btn btn-primary" })
+    }
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Tên</th>
+            <th>Mã</th>
+            <th>Kích hoạt</th>
+            <th>Mô tả</th>
+            <th style="width:220px;">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.Name</td>
+                <td>@d.Code</td>
+                <td>@(d.IsActive ? "Đang dùng" : "Tắt")</td>
+                <td>@d.Description</td>
+                <td>
+                    @Html.ActionLink("Xem", "Details", new { id = d.DepartmentId }, new { @class = "btn btn-default btn-sm" })
+                    @if (User.IsInRole("Admin"))
+                    {
+                        @Html.Raw(" ")
+                        @Html.ActionLink("Sửa", "Edit", new { id = d.DepartmentId }, new { @class = "btn btn-warning btn-sm" })
+                        @Html.Raw(" ")
+                        using (Html.BeginForm("ToggleActive", "Departments", new { id = d.DepartmentId }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-info btn-sm">Bật/Tắt</button>
+                        }
+                        @Html.Raw(" ")
+                        @Html.ActionLink("Xóa", "Delete", new { id = d.DepartmentId }, new { @class = "btn btn-danger btn-sm" })
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+>>>>>>> Stashed changes
