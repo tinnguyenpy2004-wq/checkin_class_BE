@@ -1,12 +1,24 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace AttendanceSystemProject.Models
 {
     public class AttendanceSystemContext : DbContext
     {
-        public AttendanceSystemContext() : base("DefaultConnection")
+        public AttendanceSystemContext() : base(GetConnectionString())
         {
+            // Performance: disable proxies/lazy loading by default
+            this.Configuration.LazyLoadingEnabled = false;
+            this.Configuration.ProxyCreationEnabled = false;
+            this.Configuration.AutoDetectChangesEnabled = true; // keep true for safety; toggle off in bulk ops
+        }
+
+        private static string GetConnectionString()
+        {
+            // Support either full connection string via env var or fallback to named connection
+            var envConnectionString = Environment.GetEnvironmentVariable("SQLSERVER_CONNECTION_STRING");
+            return string.IsNullOrWhiteSpace(envConnectionString) ? "DefaultConnection" : envConnectionString;
         }
 
         // Các bảng
@@ -22,6 +34,7 @@ namespace AttendanceSystemProject.Models
         public DbSet<Certificate> Certificates { get; set; }
         public DbSet<EventFeedback> EventFeedbacks { get; set; }
         public DbSet<SystemSetting> SystemSettings { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -36,6 +49,10 @@ namespace AttendanceSystemProject.Models
             // ⚙ Cấu hình bảng User
             modelBuilder.Entity<User>()
                 .ToTable("Users");
+
+            // ⚙ Cấu hình bảng Department (khớp với script DB dùng tên "Departments")
+            modelBuilder.Entity<Department>()
+                .ToTable("Departments");
 
             // Quan hệ User - Department (User thuộc 1 Department)
             modelBuilder.Entity<User>()
@@ -129,38 +146,10 @@ namespace AttendanceSystemProject.Models
                 .HasForeignKey(ef => ef.EventId)
                 .WillCascadeOnDelete(false);
 
-            // ⚙ Unique constraints
-            modelBuilder.Entity<Department>()
-                .HasIndex(d => d.Code)
-                .IsUnique();
-
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Email)
-                .IsUnique();
-
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.StudentId)
-                .IsUnique();
-
-            modelBuilder.Entity<Class>()
-                .HasIndex(c => c.Code)
-                .IsUnique();
-
-            modelBuilder.Entity<EventParticipant>()
-                .HasIndex(ep => new { ep.EventId, ep.UserId })
-                .IsUnique();
-
-            modelBuilder.Entity<Certificate>()
-                .HasIndex(c => c.CertificateNumber)
-                .IsUnique();
-
-            modelBuilder.Entity<EventFeedback>()
-                .HasIndex(ef => new { ef.EventId, ef.UserId })
-                .IsUnique();
-
-            modelBuilder.Entity<SystemSetting>()
-                .HasIndex(ss => ss.SettingKey)
-                .IsUnique();
+            // Note: Unique indices should be created via EF6 Migrations or [Index] attributes.
+            // Removed unsupported HasIndex() calls for EF6 compatibility.
+            modelBuilder.Entity<AuditLog>()
+                .ToTable("AuditLogs");
         }
     }
 }

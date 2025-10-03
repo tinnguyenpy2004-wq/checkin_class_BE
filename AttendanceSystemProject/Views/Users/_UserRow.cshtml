@@ -1,0 +1,38 @@
+﻿@model AttendanceSystemProject.Models.User
+
+@{
+    var roleName = ((AttendanceSystemProject.Models.UserRole)Model.Role).ToString();
+    var roleBadge = roleName == "Admin" ? "badge-danger" : roleName == "Organizer" ? "badge-info" : "badge-secondary";
+}
+<tr id="user-row-@Model.UserId">
+    <td>@Model.Username</td>
+    <td>@Model.FullName</td>
+    <td>@Model.Email</td>
+    <td>@(Model.Department != null ? Model.Department.Name : "N/A")</td>
+    <td>
+        <span class="badge @roleBadge">@roleName</span>
+    </td>
+    <td>@Model.CreatedDate.ToString("yyyy-MM-dd")</td>
+    <td>@(Model.LastLoginDate?.ToString("yyyy-MM-dd") ?? "Never")</td>
+    <td>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-info btn-sm js-view-details" data-id="@Model.UserId" data-toggle="modal" data-target="#detailsModal">
+                Details
+            </button>
+            @if (User.IsInRole("Admin")) {
+                <button type="button" class="btn btn-warning btn-sm js-edit-user" data-id="@Model.UserId">
+                    Edit
+                </button>
+                <button type="button" class="btn btn-danger btn-sm js-delete-user" data-id="@Model.UserId" data-name="@Model.FullName">
+                    Delete
+                </button>
+                <button type="button"
+                        class="btn @(Model.IsActive ? "btn-secondary" : "btn-primary") btn-sm js-toggle-lock"
+                        data-id="@Model.UserId"
+                        data-status="@Model.IsActive.ToString().ToLower()">
+                    <span id="lock-text-@Model.UserId">@(Model.IsActive ? "Lock" : "Unlock")</span>
+                </button>
+            }
+        </div>
+    </td>
+</tr>

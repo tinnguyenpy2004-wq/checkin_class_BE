@@ -1,0 +1,179 @@
+﻿@model IEnumerable<AttendanceSystemProject.Models.User>
+
+@{
+    ViewBag.Title = "Quản lý tài khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Quản lý tài khoản</h2>
+    @if (User.IsInRole("Admin")) {
+        <button type="button" id="createUserBtn" class="btn btn-success">
+            <i class="glyphicon glyphicon-plus"></i> Tạo tài khoản mới
+        </button>
+    }
+</div>
+
+<form method="get" class="form-inline mb-3">
+    <div class="form-group mr-2">
+        <input type="text" name="q" value="@ViewBag.Query" class="form-control" placeholder="Search name/email/username/studentId" />
+    </div>
+    <div class="form-group mr-2">
+        @Html.DropDownList("departmentId", (SelectList)ViewBag.Departments, "All departments", new { @class = "form-control" })
+    </div>
+    <div class="form-group mr-2">
+        @{ var selectedSize = (int)(ViewBag.PageSize ?? 20); }
+        <select name="pageSize" class="form-control">
+            <option value="10" @(selectedSize==10?"selected":"")>10</option>
+            <option value="20" @(selectedSize==20?"selected":"")>20</option>
+            <option value="50" @(selectedSize==50?"selected":"")>50</option>
+            <option value="100" @(selectedSize==100?"selected":"")>100</option>
+        </select>
+    </div>
+    <input type="hidden" name="sort" value="@ViewBag.Sort" />
+    <input type="hidden" name="dir" value="@ViewBag.Dir" />
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a class="btn btn-success ml-2" href="@Url.Action("ExportCsv", new { q = ViewBag.Query, departmentId = ViewBag.DepartmentId, sort = ViewBag.Sort, dir = ViewBag.Dir })">Export CSV</a>
+</form>
+
+@{
+    Func<string, string, IHtmlString> sortLink = (col, text) => {
+        var currentSort = (string)ViewBag.Sort ?? "created";
+        var currentDir = ((string)ViewBag.Dir ?? "desc").ToLower();
+        var nextDir = (currentSort == col && currentDir == "asc") ? "desc" : "asc";
+        var url = Url.Action("UserManagement", new { q = ViewBag.Query, departmentId = ViewBag.DepartmentId, sort = col, dir = nextDir, page = ViewBag.Page, pageSize = ViewBag.PageSize });
+        return new HtmlString($"<a href=\"{url}\">{text}</a>");
+    };
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>@sortLink("username", "Username")</th>
+            <th>@sortLink("fullname", "Full Name")</th>
+            <th>@sortLink("email", "Email")</th>
+            <th>@sortLink("department", "Department")</th>
+            <th>Role</th>
+            <th>@sortLink("created", "Created")</th>
+            <th>@sortLink("lastlogin", "Last Login")</th>
+            <th style="width: 320px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody id="user-table-body">
+        @foreach (var item in Model)
+        {
+            Html.RenderPartial("_UserRow", item);
+        }
+    </tbody>
+</table>
+
+<div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 100px;">
+  <div id="toast-container" style="position: absolute; top: 0; right: 0;">
+  </div>
+</div>
+
+@{
+    var total = (int)(ViewBag.TotalItems ?? 0);
+    var page = (int)(ViewBag.Page ?? 1);
+    var pageSize = (int)(ViewBag.PageSize ?? 20);
+    var totalPages = (int)Math.Ceiling((double)total / Math.Max(1, pageSize));
+}
+@if (totalPages > 1)
+{
+    <nav aria-label="Users pagination">
+        <ul class="pagination">
+            <li class="page-item @(page<=1?"disabled":"")">
+                <a class="page-link" href="@Url.Action("UserManagement", new { q = ViewBag.Query, departmentId = ViewBag.DepartmentId, sort = ViewBag.Sort, dir = ViewBag.Dir, page = Math.Max(1, page-1), pageSize = pageSize })">Prev</a>
+            </li>
+            @for (int i = Math.Max(1, page-2); i <= Math.Min(totalPages, page+2); i++)
+            {
+                <li class="page-item @(i==page?"active":"")">
+                    <a class="page-link" href="@Url.Action("UserManagement", new { q = ViewBag.Query, departmentId = ViewBag.DepartmentId, sort = ViewBag.Sort, dir = ViewBag.Dir, page = i, pageSize = pageSize })">@i</a>
+                </li>
+            }
+            <li class="page-item @(page>=totalPages?"disabled":"")">
+                <a class="page-link" href="@Url.Action("UserManagement", new { q = ViewBag.Query, departmentId = ViewBag.DepartmentId, sort = ViewBag.Sort, dir = ViewBag.Dir, page = Math.Min(totalPages, page+1), pageSize = pageSize })">Next</a>
+            </li>
+        </ul>
+    </nav>
+}
+
+<!-- Modal cho Create/Edit -->
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="userModalLabel"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="userModalBody">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal cho Details -->
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="detailsModalLabel">User Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-loader" class="text-center"><p>Loading...</p></div>
+                <div id="modal-content-details" style="display:none;">
+                    <p><strong>Username:</strong> <span id="modalUsername"></span></p>
+                    <p><strong>Full Name:</strong> <span id="modalFullName"></span></p>
+                    <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                    <p><strong>Phone Number:</strong> <span id="modalPhoneNumber"></span></p>
+                    <p><strong>Student ID:</strong> <span id="modalStudentId"></span></p>
+                    <p><strong>Department:</strong> <span id="modalDepartment"></span></p>
+                    <p><strong>Role:</strong> <span id="modalRole"></span></p>
+                    <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                    <p><strong>Email Confirmed:</strong> <span id="modalEmailConfirmed"></span></p>
+                    <p><strong>Created Date:</strong> <span id="modalCreatedDate"></span></p>
+                    <p><strong>Last Login:</strong> <span id="modalLastLogin"></span></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal cho Delete Confirmation -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="deleteModalLabel">Confirm Delete</h4>
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete user <strong id="deleteUserName"></strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/usermanagement")
+}

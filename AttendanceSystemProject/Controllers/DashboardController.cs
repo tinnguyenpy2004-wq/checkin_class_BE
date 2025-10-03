@@ -7,14 +7,14 @@ public class DashboardController : Controller
     public ActionResult Index()
     {
         var role = User.IsInRole("Admin") ? "Admin" :
-                   User.IsInRole("Teacher") ? "Teacher" :
+                   User.IsInRole("Organizer") ? "Organizer" :
                    "Student";
 
         var fullName = User.Identity.Name;
 
         // 👇 Mapping role sang tiếng Việt
         string roleVi = role == "Admin" ? "quản trị viên" :
-                        role == "Teacher" ? "giáo viên" :
+                        role == "Organizer" ? "tổ chức" :
                         "sinh viên";
 
         ViewBag.Greeting = $"Xin chào {roleVi} {fullName}";
@@ -24,8 +24,8 @@ public class DashboardController : Controller
         {
             case "Admin":
                 return View("AdminDashboard");
-            case "Teacher":
-                return View("TeacherDashboard");
+            case "Organizer":
+                return View("OrganizerDashboard");
             default:
                 return View("StudentDashboard");
         }

@@ -29,9 +29,12 @@
         </div>
     }
 
-    <p>
-        @Html.ActionLink("Thêm Khoa Mới", "Create", null, new { @class = "btn btn-primary" })
-    </p>
+    @if (User.IsInRole("Admin"))
+    {
+        <p>
+            @Html.ActionLink("Thêm Khoa Mới", "Create", null, new { @class = "btn btn-primary" })
+        </p>
+    }
 
     @if (Model != null && Model.Any())
     {
@@ -69,7 +72,67 @@
     {
         <div class="alert alert-info">
             <h4>Chưa có dữ liệu khoa nào!</h4>
-            <p>Hãy thêm khoa đầu tiên bằng cách click vào nút "Thêm Khoa Mới".</p>
+            @if (User.IsInRole("Admin"))
+            {
+                <p>Bấm nút bên dưới để thêm khoa đầu tiên.</p>
+                <p>
+                    @Html.ActionLink("Thêm Khoa Mới", "Create", null, new { @class = "btn btn-primary" })
+                </p>
+            }
+            else
+            {
+                <p>Liên hệ quản trị viên để thêm khoa đầu tiên.</p>
+            }
         </div>
     }
 </div>
+    ViewBag.Title = "Departments";
+}
+<h2>Danh sách Khoa/Phòng</h2>
+
+@if (TempData["msg"] != null) {
+    <div class="alert alert-success">@TempData["msg"]</div>
+}
+
+<p>
+@if (User.IsInRole("Admin")) {
+    @Html.ActionLink("➕ Tạo mới", "Create", "Departments", null, new { @class = "btn btn-primary" })
+}
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Tên</th>
+            <th>Mã</th>
+            <th>Kích hoạt</th>
+            <th>Mô tả</th>
+            <th style="width:220px;">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var d in Model) {
+        <tr>
+            <td>@d.Name</td>
+            <td>@d.Code</td>
+            <td>@(d.IsActive ? "Đang dùng" : "Tắt")</td>
+            <td>@d.Description</td>
+            <td>
+                @Html.ActionLink("Xem", "Details", new { id = d.DepartmentId }, new { @class = "btn btn-default btn-sm" })
+                @if (User.IsInRole("Admin")) {
+                    @Html.Raw(" ")
+                    @Html.ActionLink("Sửa", "Edit", new { id = d.DepartmentId }, new { @class = "btn btn-warning btn-sm" })
+                    @Html.Raw(" ")
+                    using (Html.BeginForm("ToggleActive", "Departments", new { id = d.DepartmentId }, FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-info btn-sm">Bật/Tắt</button>
+                    }
+                    @Html.Raw(" ")
+                    @Html.ActionLink("Xóa", "Delete", new { id = d.DepartmentId }, new { @class = "btn btn-danger btn-sm" })
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

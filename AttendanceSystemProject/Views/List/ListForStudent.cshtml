@@ -1,0 +1,69 @@
+﻿@model AttendanceSystemProject.ViewModels.StudentViewModel
+
+<div class="space-y-8">
+
+    <!-- Các lớp học đã đăng ký -->
+    <div>
+        <h2 class="text-2xl font-semibold mb-3">Các lớp học bạn đã đăng ký</h2>
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            @if (Model.EnrolledClasses.Any())
+            {
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            <th class="px-5 py-3">Tên Lớp</th>
+                            <th class="px-5 py-3">Mã Lớp</th>
+                            <th class="px-5 py-3">Giáo viên</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cls in Model.EnrolledClasses)
+                        {
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="px-5 py-4 text-sm">@cls.ClassName</td>
+                                <td class="px-5 py-4 text-sm">@cls.Code</td>
+                                <td class="px-5 py-4 text-sm">@cls.TeacherName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="p-5 text-gray-500">Bạn chưa đăng ký lớp học nào.</p>
+            }
+        </div>
+    </div>
+
+    <!-- Các sự kiện đã tham gia -->
+    <div>
+        <h2 class="text-2xl font-semibold mb-3">Các sự kiện bạn đã tham gia</h2>
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            @if (Model.ParticipatedEvents.Any())
+            {
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            <th class="px-5 py-3">Tên Sự kiện</th>
+                            <th class="px-5 py-3">Mã Sự kiện</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var evt in Model.ParticipatedEvents)
+                        {
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="px-5 py-4 text-sm">@evt.EvenName</td>
+                                <td class="px-5 py-4 text-sm">@evt.Code</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="p-5 text-gray-500">Bạn chưa tham gia sự kiện nào.</p>
+            }
+        </div>
+    </div>
+
+</div>
