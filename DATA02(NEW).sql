@@ -9,11 +9,11 @@ GO
 
 -- Xóa các bảng nếu tồn tại để tạo lại từ đầu
 IF OBJECT_ID('dbo.SystemSettings', 'U') IS NOT NULL DROP TABLE [dbo].[SystemSettings];
-IF OBJECT_ID('dbo.EventParticipants', 'U') IS NOT NULL DROP TABLE [dbo].[EventParticipants];
+IF OBJECT_ID('dbo.EventParticipants', 'U') IS NOT NULL DROP TABLE [dbo].[EventParticipant];
 IF OBJECT_ID('dbo.EventFeedbacks', 'U') IS NOT NULL DROP TABLE [dbo].[EventFeedbacks];
 IF OBJECT_ID('dbo.Certificates', 'U') IS NOT NULL DROP TABLE [dbo].[Certificates];
 IF OBJECT_ID('dbo.Attendances', 'U') IS NOT NULL DROP TABLE [dbo].[Attendances];
-IF OBJECT_ID('dbo.ClassStudents', 'U') IS NOT NULL DROP TABLE [dbo].[ClassStudents];
+IF OBJECT_ID('dbo.ClassStudent', 'U') IS NOT NULL DROP TABLE [dbo].[ClassStudent];
 IF OBJECT_ID('dbo.ClassSessions', 'U') IS NOT NULL DROP TABLE [dbo].[ClassSessions];
 IF OBJECT_ID('dbo.LoginOtps', 'U') IS NOT NULL DROP TABLE [dbo].[LoginOtps];
 IF OBJECT_ID('dbo.AuditLogs', 'U') IS NOT NULL DROP TABLE [dbo].[AuditLogs];
@@ -138,7 +138,7 @@ CREATE TABLE [dbo].[ClassSessions](
 GO
 
 -- Tạo bảng ClassStudents
-CREATE TABLE [dbo].[ClassStudents](
+CREATE TABLE [dbo].[ClassStudent](
     [ClassStudentId] [int] IDENTITY(1,1) NOT NULL,
     [ClassId] [int] NOT NULL,
     [StudentId] [int] NOT NULL,
@@ -190,8 +190,8 @@ CREATE TABLE [dbo].[EventFeedbacks](
 ) ON [PRIMARY]
 GO
 
--- Tạo bảng EventParticipants
-CREATE TABLE [dbo].[EventParticipants](
+-- Tạo bảng EventParticipant
+CREATE TABLE [dbo].[EventParticipant](
     [ParticipantId] [int] IDENTITY(1,1) NOT NULL,
     [EventId] [int] NOT NULL,
     [UserId] [int] NOT NULL,
@@ -249,8 +249,8 @@ CREATE NONCLUSTERED INDEX [IX_Event_DepartmentId] ON [dbo].[Event]([DepartmentId
 CREATE NONCLUSTERED INDEX [IX_Event_OrganizerId] ON [dbo].[Event]([OrganizerId] ASC);
 CREATE NONCLUSTERED INDEX [IX_LoginOtps_User_Purpose_Expires] ON [dbo].[LoginOtps]([UserId] ASC, [Purpose] ASC, [ExpiresAt] ASC);
 CREATE NONCLUSTERED INDEX [IX_ClassSessions_ClassId] ON [dbo].[ClassSessions]([ClassId] ASC);
-CREATE NONCLUSTERED INDEX [IX_ClassStudents_StudentId] ON [dbo].[ClassStudents]([StudentId] ASC);
-CREATE UNIQUE NONCLUSTERED INDEX [IX_ClassStudents_Unique] ON [dbo].[ClassStudents]([ClassId] ASC, [StudentId] ASC);
+CREATE NONCLUSTERED INDEX [IX_ClassStudents_StudentId] ON [dbo].[ClassStudent]([StudentId] ASC);
+CREATE UNIQUE NONCLUSTERED INDEX [IX_ClassStudent_Unique] ON [dbo].[ClassStudent]([ClassId] ASC, [StudentId] ASC);
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Attendances_ClassSession_User] ON [dbo].[Attendances]([ClassSessionId] ASC, [UserId] ASC) WHERE ([ClassSessionId] IS NOT NULL);
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Attendances_Event_User] ON [dbo].[Attendances]([EventId] ASC, [UserId] ASC) WHERE ([EventId] IS NOT NULL);
 CREATE NONCLUSTERED INDEX [IX_Attendances_UserId] ON [dbo].[Attendances]([UserId] ASC);
@@ -259,8 +259,8 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Certificates_Number] ON [dbo].[Certificates
 CREATE NONCLUSTERED INDEX [IX_Certificates_UserId] ON [dbo].[Certificates]([UserId] ASC);
 CREATE UNIQUE NONCLUSTERED INDEX [IX_EventFeedbacks_Unique] ON [dbo].[EventFeedbacks]([EventId] ASC, [UserId] ASC);
 CREATE NONCLUSTERED INDEX [IX_EventFeedbacks_UserId] ON [dbo].[EventFeedbacks]([UserId] ASC);
-CREATE UNIQUE NONCLUSTERED INDEX [IX_EventParticipants_Unique] ON [dbo].[EventParticipants]([EventId] ASC, [UserId] ASC);
-CREATE NONCLUSTERED INDEX [IX_EventParticipants_UserId] ON [dbo].[EventParticipants]([UserId] ASC);
+CREATE UNIQUE NONCLUSTERED INDEX [IX_EventParticipant_Unique] ON [dbo].[EventParticipant]([EventId] ASC, [UserId] ASC);
+CREATE NONCLUSTERED INDEX [IX_EventParticipant_UserId] ON [dbo].[EventParticipant]([UserId] ASC);
 CREATE UNIQUE NONCLUSTERED INDEX [IX_SystemSettings_Key] ON [dbo].[SystemSettings]([SettingKey] ASC);
 GO
 
@@ -277,14 +277,14 @@ ALTER TABLE [dbo].[Event] ADD CONSTRAINT [DF_Event_CreatedDate] DEFAULT (GETDATE
 ALTER TABLE [dbo].[LoginOtps] ADD CONSTRAINT [DF_LoginOtps_CreatedAt] DEFAULT (GETDATE()) FOR [CreatedAt];
 ALTER TABLE [dbo].[ClassSessions] ADD CONSTRAINT [DF_ClassSessions_IsActive] DEFAULT ((1)) FOR [IsActive];
 ALTER TABLE [dbo].[ClassSessions] ADD CONSTRAINT [DF_ClassSessions_CreatedDate] DEFAULT (GETDATE()) FOR [CreatedDate];
-ALTER TABLE [dbo].[ClassStudents] ADD CONSTRAINT [DF_ClassStudents_JoinDate] DEFAULT (GETDATE()) FOR [JoinDate];
-ALTER TABLE [dbo].[ClassStudents] ADD CONSTRAINT [DF_ClassStudents_IsActive] DEFAULT ((1)) FOR [IsActive];
+ALTER TABLE [dbo].[ClassStudent] ADD CONSTRAINT [DF_ClassStudent_JoinDate] DEFAULT (GETDATE()) FOR [JoinDate];
+ALTER TABLE [dbo].[ClassStudent] ADD CONSTRAINT [DF_ClassStudent_IsActive] DEFAULT ((1)) FOR [IsActive];
 ALTER TABLE [dbo].[Attendances] ADD CONSTRAINT [DF_Attendances_RecordedDate] DEFAULT (GETDATE()) FOR [RecordedDate];
 ALTER TABLE [dbo].[Certificates] ADD CONSTRAINT [DF_Certificates_IssueDate] DEFAULT (GETDATE()) FOR [IssueDate];
 ALTER TABLE [dbo].[Certificates] ADD CONSTRAINT [DF_Certificates_IsSent] DEFAULT ((0)) FOR [IsSent];
 ALTER TABLE [dbo].[EventFeedbacks] ADD CONSTRAINT [DF_EventFeedbacks_SubmittedDate] DEFAULT (GETDATE()) FOR [SubmittedDate];
-ALTER TABLE [dbo].[EventParticipants] ADD CONSTRAINT [DF_EventParticipants_RegistrationDate] DEFAULT (GETDATE()) FOR [RegistrationDate];
-ALTER TABLE [dbo].[EventParticipants] ADD CONSTRAINT [DF_EventParticipants_IsApproved] DEFAULT ((0)) FOR [IsApproved];
+ALTER TABLE [dbo].[EventParticipant] ADD CONSTRAINT [DF_EventParticipant_RegistrationDate] DEFAULT (GETDATE()) FOR [RegistrationDate];
+ALTER TABLE [dbo].[EventParticipant] ADD CONSTRAINT [DF_EventParticipant_IsApproved] DEFAULT ((0)) FOR [IsApproved];
 ALTER TABLE [dbo].[SystemSettings] ADD CONSTRAINT [DF_SystemSettings_LastUpdated] DEFAULT (GETDATE()) FOR [LastUpdated];
 GO
 
@@ -296,8 +296,8 @@ ALTER TABLE [dbo].[Event] WITH CHECK ADD CONSTRAINT [FK_Event_Organizer] FOREIGN
 ALTER TABLE [dbo].[Event] WITH CHECK ADD CONSTRAINT [FK_Event_Department] FOREIGN KEY([DepartmentId]) REFERENCES [dbo].[Departments] ([DepartmentId]);
 ALTER TABLE [dbo].[LoginOtps] WITH CHECK ADD CONSTRAINT [FK_LoginOtps_User] FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId]);
 ALTER TABLE [dbo].[ClassSessions] WITH CHECK ADD CONSTRAINT [FK_ClassSessions_Class] FOREIGN KEY([ClassId]) REFERENCES [dbo].[Class] ([ClassId]);
-ALTER TABLE [dbo].[ClassStudents] WITH CHECK ADD CONSTRAINT [FK_ClassStudents_Class] FOREIGN KEY([ClassId]) REFERENCES [dbo].[Class] ([ClassId]);
-ALTER TABLE [dbo].[ClassStudents] WITH CHECK ADD CONSTRAINT [FK_ClassStudents_Student] FOREIGN KEY([StudentId]) REFERENCES [dbo].[Users] ([UserId]);
+ALTER TABLE [dbo].[ClassStudent] WITH CHECK ADD CONSTRAINT [FK_ClassStudent_Class] FOREIGN KEY([ClassId]) REFERENCES [dbo].[Class] ([ClassId]);
+ALTER TABLE [dbo].[ClassStudent] WITH CHECK ADD CONSTRAINT [FK_ClassStudent_Student] FOREIGN KEY([StudentId]) REFERENCES [dbo].[Users] ([UserId]);
 ALTER TABLE [dbo].[Attendances] WITH CHECK ADD CONSTRAINT [FK_Attendances_User] FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId]);
 ALTER TABLE [dbo].[Attendances] WITH CHECK ADD CONSTRAINT [FK_Attendances_ClassSession] FOREIGN KEY([ClassSessionId]) REFERENCES [dbo].[ClassSessions] ([SessionId]);
 ALTER TABLE [dbo].[Attendances] WITH CHECK ADD CONSTRAINT [FK_Attendances_Event] FOREIGN KEY([EventId]) REFERENCES [dbo].[Event] ([EventId]);
@@ -305,8 +305,8 @@ ALTER TABLE [dbo].[Certificates] WITH CHECK ADD CONSTRAINT [FK_Certificates_User
 ALTER TABLE [dbo].[Certificates] WITH CHECK ADD CONSTRAINT [FK_Certificates_Event] FOREIGN KEY([EventId]) REFERENCES [dbo].[Event] ([EventId]);
 ALTER TABLE [dbo].[EventFeedbacks] WITH CHECK ADD CONSTRAINT [FK_EventFeedbacks_User] FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId]);
 ALTER TABLE [dbo].[EventFeedbacks] WITH CHECK ADD CONSTRAINT [FK_EventFeedbacks_Event] FOREIGN KEY([EventId]) REFERENCES [dbo].[Event] ([EventId]);
-ALTER TABLE [dbo].[EventParticipants] WITH CHECK ADD CONSTRAINT [FK_EventParticipants_User] FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId]);
-ALTER TABLE [dbo].[EventParticipants] WITH CHECK ADD CONSTRAINT [FK_EventParticipants_Event] FOREIGN KEY([EventId]) REFERENCES [dbo].[Event] ([EventId]);
+ALTER TABLE [dbo].[EventParticipant] WITH CHECK ADD CONSTRAINT [FK_EventParticipants_User] FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId]);
+ALTER TABLE [dbo].[EventParticipant] WITH CHECK ADD CONSTRAINT [FK_EventParticipants_Event] FOREIGN KEY([EventId]) REFERENCES [dbo].[Event] ([EventId]);
 GO
 
 -- Dữ liệu mẫu cho bảng Departments
@@ -344,11 +344,21 @@ INSERT INTO [dbo].[Users] (
     [LastPasswordChangeAt]
 )
 VALUES
-    ('admin', 'Quản trị viên', 'admin@school.edu', '0123456789', NULL, 1, 1, NULL, 1, GETDATE(), NULL, 1, '123', 0, NULL, GETDATE()),
-    ('teacher1', 'Nguyễn Văn A', 'teacher1@school.edu', '0987654321', NULL, 2, 1, NULL, 1, GETDATE(), NULL, 1, 'hashed_teacher1_password', 0, NULL, GETDATE()),
-    ('teacher2', 'Trần Thị B', 'teacher2@school.edu', '0912345678', NULL, 2, 2, NULL, 1, GETDATE(), NULL, 1, 'hashed_teacher2_password', 0, NULL, GETDATE()),
-    ('student1', 'Lê Văn C', 'student1@school.edu', '0932145678', 'ST001', 3, 1, NULL, 1, GETDATE(), NULL, 1, 'hashed_student1_password', 0, NULL, GETDATE()),
-    ('student2', 'Phạm Thị D', 'student2@school.edu', '0941234567', 'ST002', 3, 2, NULL, 1, GETDATE(), NULL, 1, 'hashed_student2_password', 0, NULL, GETDATE());
+  ('admin', 'Quản trị viên', 'admin@gmail.com', '0123456789', NULL, 1, 1, NULL, 1, GETDATE(), NULL, 1,
+     'AQAAAAIAAYagAAAAEKvAnZ4G9ClIglgQfZRcYxzFYlhtQhHbHW4tbFXXeBi5gkOqD+rOykN86nqU39yCmg==', 
+     0, NULL, GETDATE()),
+    ('teacher1', 'Nguyễn Văn A', 'teacher1@school.edu', '0987654321', NULL, 2, 1, NULL, 1, GETDATE(), NULL, 1,
+     'AQAAAAIAAYagAAAAEKvAnZ4G9ClIglgQfZRcYxzFYlhtQhHbHW4tbFXXeBi5gkOqD+rOykN86nqU39yCmg==', 
+     0, NULL, GETDATE()),
+    ('teacher2', 'Trần Thị B', 'teacher2@school.edu', '0912345678', NULL, 2, 2, NULL, 1, GETDATE(), NULL, 1,
+     'AQAAAAIAAYagAAAAEKvAnZ4G9ClIglgQfZRcYxzFYlhtQhHbHW4tbFXXeBi5gkOqD+rOykN86nqU39yCmg==', 
+     0, NULL, GETDATE()),
+    ('student1', 'Lê Văn C', 'student1@school.edu', '0932145678', 'ST001', 3, 1, NULL, 1, GETDATE(), NULL, 1,
+     'AQAAAAIAAYagAAAAEKvAnZ4G9ClIglgQfZRcYxzFYlhtQhHbHW4tbFXXeBi5gkOqD+rOykN86nqU39yCmg==', 
+     0, NULL, GETDATE()),
+    ('student2', 'Phạm Thị D', 'student2@school.edu', '0941234567', 'ST002', 3, 2, NULL, 1, GETDATE(), NULL, 1,
+     'AQAAAAIAAYagAAAAEKvAnZ4G9ClIglgQfZRcYxzFYlhtQhHbHW4tbFXXeBi5gkOqD+rOykN86nqU39yCmg==', 
+     0, NULL, GETDATE());
 GO
 
 -- Dữ liệu mẫu cho bảng Class
