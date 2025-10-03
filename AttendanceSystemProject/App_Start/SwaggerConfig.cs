@@ -274,7 +274,13 @@ namespace AttendanceSystemProject
             bool isSwagger = path.Contains("/swagger") || path.Contains("/swashbuckle");
             if (isSwagger)
             {
-                var principal = System.Web.HttpContext.Current?.User;
+                var httpContext = System.Web.HttpContext.Current;
+                if (httpContext?.Request?.IsLocal == true)
+                {
+                    return await base.SendAsync(request, cancellationToken);
+                }
+
+                var principal = httpContext?.User;
                 if (principal == null || !principal.Identity.IsAuthenticated || !principal.IsInRole("Admin"))
                 {
                     return new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.Forbidden)

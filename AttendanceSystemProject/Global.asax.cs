@@ -43,8 +43,20 @@ namespace AttendanceSystemProject
                     .Replace('+', '-')
                     .Replace('/', '_');
                 HttpContext.Current.Items["CspNonce"] = nonce;
-                // Set CSP allowing self and nonce for scripts; allow style from self and inline for compatibility
-                resp.Headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' data:; script-src 'self' 'nonce-" + nonce + "'; style-src 'self' 'unsafe-inline'";
+
+                // Swagger UI uses inline/eval scripts (Swashbuckle 5.x). Relax CSP only for swagger routes.
+                var path = System.Web.HttpContext.Current?.Request?.Url?.AbsolutePath?.ToLowerInvariant() ?? string.Empty;
+                bool isSwagger = path.Contains("/swagger") || path.Contains("/swashbuckle");
+                if (isSwagger)
+                {
+                    // More permissive CSP for Swagger UI only
+                    resp.Headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:";
+                }
+                else
+                {
+                    // Strict CSP for the app pages (with nonce for any inline scripts you may add deliberately)
+                    resp.Headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' data:; script-src 'self' 'nonce-" + nonce + "'; style-src 'self' 'unsafe-inline'";
+                }
             }
             catch { }
         }
